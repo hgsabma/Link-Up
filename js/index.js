@@ -42,6 +42,7 @@ function initPage() {
   renderUpcoming();
   renderReading();
   $('#help-box').innerHTML = helpBoxHtml();
+  renderMyWeek();
 }
 
 function renderUpcoming() {
@@ -66,7 +67,7 @@ function renderReading() {
 
 function chooseMood(value) {
   $$('#mood-buttons .mood-btn').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.mood) === value)));
-  if (me) insertRow('mood_checks', { user_id: me.id, mood: value, created_at: nowIso() });
+  if (me) insertRow('mood_checks', { user_id: me.id, mood: value, created_at: nowIso(), activity_id: null });
 
   const result = $('#mood-result');
   const saved = me ? '<p class="muted small">Sparat på <a href="min-sida.html">Min sida</a>. Bara du ser det.</p>' : '<p class="muted small"><a href="logga-in.html">Logga in</a> för att spara ditt mående.</p>';
@@ -84,4 +85,45 @@ function chooseMood(value) {
   } else {
     result.innerHTML = '<div class="notice notice-success"><p>Vad kul att höra! Vill du sprida lite av det? Skriv något peppigt i <a href="amnen.html?amne=7">Att må bättre</a> eller häng med på en <a href="aktiviteter.html">aktivitet</a>.</p></div>' + saved;
   }
+}
+
+function weekTile(ic, label, title, sub, href, linkText) {
+  return '<div class="week-tile"><span class="label">' + icon(ic) + label + '</span><strong>' + title + '</strong>' +
+    '<span class="muted small">' + sub + '</span><a href="' + href + '">' + linkText + ' ' + icon('arrow') + '</a></div>';
+}
+
+// Din vecka: det viktigaste för dig just nu, så att du vet vart du ska
+function renderMyWeek() {
+  const box = $('#my-week');
+  if (!me) return;
+  const group = getSmallGroup(me.id);
+  const next = upcomingActivities().find(a => isParticipant(a.id, me.id));
+  const unread = countUnread(me.id);
+  const reminders = getReminders(me.id);
+  const toRate = activitiesToRate(me.id);
+
+  box.innerHTML = '<h2 id="week-title">Din vecka</h2>' +
+    (reminders.length ? '<div class="notice"><p style="margin-bottom:.25rem"><strong>Påminnelse</strong></p><ul class="reminder-list">' +
+      reminders.map(r => '<li>' + icon('clock') + '<span><strong>' + whenText(r.starts_at) + ':</strong> <a href="' + r.href + '">' + escapeHtml(r.title) + '</a>' +
+        (r.groupId && !isAttending(r.groupId, me.id) ? ' – har du sagt att du kommer?' : '') + '</span></li>').join('') + '</ul></div>' : '') +
+    toRate.map(a => '<div class="notice notice-success"><p><strong>Hur var ' + escapeHtml(a.title) + '?</strong> Ditt svar hamnar i din mående-kurva. Bara du ser det.</p>' +
+      '<div class="mood-buttons" role="group" aria-label="Hur var ' + escapeHtml(a.title) + '?">' +
+      MOODS.map(m => '<button type="button" class="mood-btn" data-rate="' + a.id + '" data-mood="' + m.value + '">' + moodFace(m) + m.label + '</button>').join('') +
+      '</div></div>').join('') +
+    '<div class="week-grid">' +
+      weekTile('users', 'Din grupp', group ? escapeHtml(group.name) : 'Ingen grupp än',
+        group ? whenText(nextMeeting(group.id)) : 'Vi har ett förslag till dig', 'grupper.html', group ? 'Till gruppen' : 'Se förslaget') +
+      weekTile('calendar', 'Nästa aktivitet', next ? escapeHtml(next.title) : 'Inget inbokat',
+        next ? whenText(next.starts_at) : 'Promenader, plugg och spel', 'aktiviteter.html', next ? 'Se aktiviteter' : 'Hitta något') +
+      weekTile('chat', 'Meddelanden', unread ? unread + (unread > 1 ? ' olästa' : ' oläst') : 'Inga nya',
+        'Från din grupp och volontärer', 'samtal.html', 'Öppna samtal') +
+    '</div>';
+  box.hidden = false;
+
+  // "Hur var det?" sparas som en mående-check kopplad till aktiviteten
+  $$('[data-rate]', box).forEach(b => b.addEventListener('click', () => {
+    insertRow('mood_checks', { user_id: me.id, mood: Number(b.dataset.mood), created_at: nowIso(), activity_id: Number(b.dataset.rate) });
+    toast('Tack! Det syns i din mående-kurva på Min sida.');
+    renderMyWeek();
+  }));
 }

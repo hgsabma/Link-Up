@@ -2,7 +2,6 @@
 
 let me;
 let activeTopic = null;   // null = alla ämnen
-let reportPostId = null;
 const openReplies = new Set();
 
 const REACTIONS = [
@@ -30,17 +29,6 @@ function initPage() {
     activeTopic = Number($('#post-topic').value);
     toast('Ditt inlägg är publicerat.');
     render();
-  });
-
-  // Rapportdialogen
-  $('#report-cancel').addEventListener('click', () => $('#report-dialog').close());
-  $('#report-form').addEventListener('submit', () => {
-    const reason = new FormData($('#report-form')).get('reason');
-    if (reportPostId && !hasReported(me.id, reportPostId)) {
-      insertRow('reports', { reporter_id: me.id, post_id: reportPostId, reason: reason, created_at: nowIso() });
-      toast('Tack! En moderator tittar på inlägget.');
-      render();
-    }
   });
 
   render();
@@ -166,10 +154,7 @@ function bindPostButtons() {
     renderPosts();
   }));
 
-  $$('[data-report]').forEach(b => b.addEventListener('click', () => {
-    reportPostId = Number(b.dataset.report);
-    $('#report-dialog').showModal();
-  }));
+  $$('[data-report]').forEach(b => b.addEventListener('click', () => openReportDialog('post_id', Number(b.dataset.report), render)));
 
   $$('[data-block]').forEach(b => b.addEventListener('click', () => {
     const id = Number(b.dataset.block);

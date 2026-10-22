@@ -5,7 +5,7 @@
    Inget som kan räknas fram sparas – det sköts av hjälpfunktionerna längst ner.
    ========================================================= */
 
-const DB_KEY = 'linkup_db_v1';
+const DB_KEY = 'linkup_db_v2';
 
 // Alla tabeller i databasen (se docs/databas.md)
 const TABLES = [
@@ -40,13 +40,13 @@ function seedData() {
   return {
     users: [
       { id: 1, bankid_hash: 'bh_7f3a91', alias: 'Nattuggla', birth_date: '2009-03-14', role: 'member', created_at: relDate(-60) },
-      { id: 2, bankid_hash: 'bh_2b8c44', alias: 'Molnet', birth_date: '2008-07-02', role: 'member', created_at: relDate(-90) },
+      { id: 2, bankid_hash: 'bh_2b8c44', alias: 'Molnet', birth_date: '2009-07-02', role: 'member', created_at: relDate(-90) },
       { id: 3, bankid_hash: 'bh_5e1d09', alias: 'Solros', birth_date: '2010-01-20', role: 'member', created_at: relDate(-45) },
       { id: 4, bankid_hash: 'bh_a4f3c2', alias: 'Kompassen', birth_date: '2009-11-05', role: 'member', created_at: relDate(-80) },
-      { id: 5, bankid_hash: 'bh_66d0e1', alias: 'Tekoppen', birth_date: '2008-04-30', role: 'member', created_at: relDate(-120) },
+      { id: 5, bankid_hash: 'bh_66d0e1', alias: 'Tekoppen', birth_date: '2009-04-30', role: 'member', created_at: relDate(-120) },
       { id: 6, bankid_hash: 'bh_0c9b5a', alias: 'Vågen', birth_date: '2010-06-12', role: 'member', created_at: relDate(-30) },
       { id: 7, bankid_hash: 'bh_e7a213', alias: 'Stjärnfall', birth_date: '2009-09-09', role: 'member', created_at: relDate(-50) },
-      { id: 8, bankid_hash: 'bh_31f8d6', alias: 'Löparen', birth_date: '2008-12-01', role: 'member', created_at: relDate(-70) },
+      { id: 8, bankid_hash: 'bh_31f8d6', alias: 'Löparen', birth_date: '2009-12-01', role: 'member', created_at: relDate(-70) },
       { id: 9, bankid_hash: 'bh_9d4b77', alias: 'Stormen', birth_date: '2009-02-02', role: 'member', created_at: relDate(-40) },
       { id: 10, bankid_hash: 'bh_v10s', alias: 'Volontär Sara', birth_date: '1998-05-18', role: 'volunteer', created_at: relDate(-200) },
       { id: 11, bankid_hash: 'bh_v11j', alias: 'Volontär Jonas', birth_date: '1995-10-03', role: 'volunteer', created_at: relDate(-180) },
@@ -110,15 +110,17 @@ function seedData() {
       { user_id: 2, post_id: 9, type: 'not_alone', created_at: relDate(-4, 21, 0) }
     ],
 
-    // Små grupper (max 8) ses varje vecka på samma veckodag och tid som de skapades
+    // Små grupper (max 8) ses varje vecka på samma veckodag och tid som de skapades.
+    // min_age och max_age styr vilken åldersgrupp som får gå med (max_age null = ingen övre gräns).
     groups: [
-      { id: 1, name: 'Tisdagsgänget', description: 'En lugn grupp som ses online varje tisdag och pratar om veckan. Ingen press att säga något.', interest_id: 12, max_members: 8, created_at: pastWeekday(10, 2, 18, 0) },
-      { id: 2, name: 'Promenadgruppen Söder', description: 'Vi går en runda på Södermalm varje torsdag efter skolan. Samling vid Medborgarplatsen.', interest_id: 1, max_members: 8, created_at: pastWeekday(8, 4, 16, 30) },
-      { id: 3, name: 'Lugna kvällar', description: 'Söndagskvällar med te, lugn musik och samtal i liten skala.', interest_id: 12, max_members: 6, created_at: pastWeekday(6, 0, 19, 0) },
-      { id: 4, name: 'Spelkvällen', description: 'Vi spelar ihop online varje fredag. Alla nivåer är välkomna.', interest_id: 2, max_members: 8, created_at: pastWeekday(12, 5, 19, 0) },
-      { id: 5, name: 'Plugghjälpen', description: 'Vi pluggar tillsammans på onsdagar och hjälper varandra med läxor.', interest_id: 5, max_members: 8, created_at: pastWeekday(9, 3, 15, 0) },
-      { id: 6, name: 'Lässtundsgänget', description: 'Gruppen för alla som gillar lässtunderna. Här chattar vi under och efter läsningen.', interest_id: 4, max_members: 30, created_at: pastWeekday(15, 0, 18, 0) },
-      { id: 7, name: 'Musiknördar', description: 'Tipsa om låtar, prata om konserter och dela spellistor.', interest_id: 3, max_members: 25, created_at: pastWeekday(20, 6, 14, 0) }
+      { id: 1, name: 'Tisdagsgänget', description: 'En lugn grupp som ses online varje tisdag och pratar om veckan. Ingen press att säga något.', interest_id: 12, max_members: 8, min_age: 15, max_age: 17, created_at: pastWeekday(10, 2, 18, 0) },
+      { id: 2, name: 'Promenadgruppen Söder', description: 'Vi går en runda på Södermalm varje torsdag efter skolan. Samling vid Medborgarplatsen.', interest_id: 1, max_members: 8, min_age: 15, max_age: 17, created_at: pastWeekday(8, 4, 16, 30) },
+      { id: 3, name: 'Lugna kvällar', description: 'Söndagskvällar med te, lugn musik och samtal i liten skala.', interest_id: 12, max_members: 6, min_age: 15, max_age: 17, created_at: pastWeekday(6, 0, 19, 0) },
+      { id: 4, name: 'Spelkvällen', description: 'Vi spelar ihop online varje fredag. Alla nivåer är välkomna.', interest_id: 2, max_members: 8, min_age: 15, max_age: 17, created_at: pastWeekday(12, 5, 19, 0) },
+      { id: 5, name: 'Plugghjälpen', description: 'Vi pluggar tillsammans på onsdagar och hjälper varandra med läxor.', interest_id: 5, max_members: 8, min_age: 15, max_age: 17, created_at: pastWeekday(9, 3, 15, 0) },
+      { id: 6, name: 'Lässtundsgänget', description: 'Gruppen för alla som gillar lässtunderna. Här chattar vi under och efter läsningen.', interest_id: 4, max_members: 30, min_age: 15, max_age: null, created_at: pastWeekday(15, 0, 18, 0) },
+      { id: 7, name: 'Musiknördar', description: 'Tipsa om låtar, prata om konserter och dela spellistor.', interest_id: 3, max_members: 25, min_age: 15, max_age: 17, created_at: pastWeekday(20, 6, 14, 0) },
+      { id: 8, name: 'Kvällspromenad 18+', description: 'För dig som är 18 eller äldre. Vi går en lugn runda på onsdagskvällar.', interest_id: 1, max_members: 8, min_age: 18, max_age: null, created_at: pastWeekday(5, 3, 19, 0) }
     ],
 
     group_members: [
@@ -140,12 +142,14 @@ function seedData() {
     ],
 
     group_messages: [
-      { id: 1, group_id: 1, user_id: 2, body: 'Hej allihop! Hur har veckan varit?', created_at: relDate(-2, 16, 0) },
-      { id: 2, group_id: 1, user_id: 3, body: 'Lite stressig, men okej. Ser fram emot tisdag.', created_at: relDate(-2, 16, 20) },
-      { id: 3, group_id: 1, user_id: 4, body: 'Samma! Någon som vill ta en promenad innan träffen?', created_at: relDate(-1, 12, 5) },
-      { id: 4, group_id: 6, user_id: 10, body: 'Välkomna till lässtunden! Vi fortsätter med kapitel 3 i Ljuset över Ekön.', created_at: relDate(-1, 18, 0) },
-      { id: 5, group_id: 6, user_id: 3, body: 'Älskar när det blir storm på ön, så mysigt att lyssna på.', created_at: relDate(-1, 18, 25) },
-      { id: 6, group_id: 4, user_id: 8, body: 'Fredag kl 19 som vanligt?', created_at: relDate(-2, 10, 0) }
+      { id: 1, group_id: 1, user_id: 2, body: 'Hej allihop! Hur har veckan varit?', created_at: relDate(-2, 16, 0), removed_at: null },
+      { id: 2, group_id: 1, user_id: 3, body: 'Lite stressig, men okej. Ser fram emot tisdag.', created_at: relDate(-2, 16, 20), removed_at: null },
+      { id: 3, group_id: 1, user_id: 4, body: 'Samma! Någon som vill ta en promenad innan träffen?', created_at: relDate(-1, 12, 5), removed_at: null },
+      { id: 4, group_id: 6, user_id: 10, body: 'Välkomna till lässtunden! Vi fortsätter med kapitel 3 i Ljuset över Ekön.', created_at: relDate(-1, 18, 0), removed_at: null },
+      { id: 5, group_id: 6, user_id: 3, body: 'Älskar när det blir storm på ön, så mysigt att lyssna på.', created_at: relDate(-1, 18, 25), removed_at: null },
+      { id: 6, group_id: 4, user_id: 8, body: 'Fredag kl 19 som vanligt?', created_at: relDate(-2, 10, 0), removed_at: null },
+      { id: 7, group_id: 4, user_id: 9, body: 'Ni är så dåliga på spel att det är pinsamt att spela med er.', created_at: relDate(-1, 19, 30), removed_at: null },
+      { id: 8, group_id: 3, user_id: 6, body: 'Orkar inte mer med allt just nu. Känns som att ingen skulle märka om jag var borta.', created_at: relDate(0, 7, 15), removed_at: null }
     ],
 
     // Vem som har sagt "Jag kommer" till en grupps veckoträff (meeting_date = datum för träffen)
@@ -154,10 +158,10 @@ function seedData() {
     ],
 
     direct_messages: [
-      { id: 1, sender_id: 2, receiver_id: 1, body: 'Hej! Tack för ditt svar i tråden om ensamhet. Skönt att inte vara själv om det.', created_at: relDate(-3, 22, 0), read_at: relDate(-3, 22, 30) },
-      { id: 2, sender_id: 1, receiver_id: 2, body: 'Detsamma! Ses på tisdag?', created_at: relDate(-3, 22, 31), read_at: relDate(-3, 23, 0) },
-      { id: 3, sender_id: 2, receiver_id: 1, body: 'Absolut, jag kommer!', created_at: relDate(-3, 23, 1), read_at: relDate(-2, 8, 0) },
-      { id: 4, sender_id: 3, receiver_id: 1, body: 'Hej Nattuggla, vill du följa med på lässtunden på biblioteket?', created_at: relDate(0, 7, 50), read_at: null }
+      { id: 1, sender_id: 2, receiver_id: 1, body: 'Hej! Tack för ditt svar i tråden om ensamhet. Skönt att inte vara själv om det.', created_at: relDate(-3, 22, 0), read_at: relDate(-3, 22, 30), removed_at: null },
+      { id: 2, sender_id: 1, receiver_id: 2, body: 'Detsamma! Ses på tisdag?', created_at: relDate(-3, 22, 31), read_at: relDate(-3, 23, 0), removed_at: null },
+      { id: 3, sender_id: 2, receiver_id: 1, body: 'Absolut, jag kommer!', created_at: relDate(-3, 23, 1), read_at: relDate(-2, 8, 0), removed_at: null },
+      { id: 4, sender_id: 3, receiver_id: 1, body: 'Hej Nattuggla, vill du följa med på lässtunden på biblioteket?', created_at: relDate(0, 7, 50), read_at: null, removed_at: null }
     ],
 
     books: [
@@ -167,12 +171,13 @@ function seedData() {
 
     activities: [
       { id: 1, created_by: 10, title: 'Promenad runt Vasaparken', description: 'En lugn promenad på ungefär en timme. Vi pratar om allt och inget, eller går tyst om du vill.', location: 'Vasaparken, Stockholm (vid lekplatsen)', starts_at: relDate(2, 16, 0), max_participants: 10, is_safe_first_meet: true, book_id: null, created_at: relDate(-5) },
-      { id: 2, created_by: 5, title: 'Spelkväll online', description: 'Vi spelar enkla partyspel tillsammans. Mikrofon behövs inte, du kan skriva i chatten.', location: 'Online', starts_at: relDate(3, 19, 0), max_participants: 12, is_safe_first_meet: false, book_id: null, created_at: relDate(-4) },
+      { id: 2, created_by: 5, title: 'Spelkväll online', description: 'Vi spelar enkla partyspel tillsammans. Mikrofon behövs inte, du kan skriva i chatten.', location: 'Online', starts_at: relDate(1, 19, 0), max_participants: 12, is_safe_first_meet: false, book_id: null, created_at: relDate(-4) },
       { id: 3, created_by: 10, title: 'Lässtund: kapitel 3', description: 'Volontär Sara läser högt. Lyssna, läs med i din egen takt eller chatta.', location: 'Online', starts_at: relDate(4, 18, 0), max_participants: 20, is_safe_first_meet: false, book_id: 1, created_at: relDate(-6) },
       { id: 4, created_by: 4, title: 'Plugg på stadsbiblioteket', description: 'Ta med det du behöver plugga. Vi sitter tillsammans och tar fikapaus efter en timme.', location: 'Stadsbiblioteket, Odengatan 53', starts_at: relDate(5, 15, 0), max_participants: 8, is_safe_first_meet: true, book_id: null, created_at: relDate(-3) },
       { id: 5, created_by: 12, title: 'Fika och brädspel', description: 'Enkla brädspel och fika. Volontär Amina är på plats och tar emot vid dörren.', location: 'Ungdomens hus, Kungsgatan 12', starts_at: relDate(6, 17, 0), max_participants: 10, is_safe_first_meet: true, book_id: null, created_at: relDate(-2) },
       { id: 6, created_by: 10, title: 'Lässtund på biblioteket', description: 'Vi läser Ljuset över Ekön tillsammans i ett lugnt rum på biblioteket.', location: 'Stadsbiblioteket, läsrummet plan 2', starts_at: relDate(8, 17, 0), max_participants: 12, is_safe_first_meet: true, book_id: 1, created_at: relDate(-2) },
-      { id: 7, created_by: 2, title: 'Morgonyoga i parken', description: 'Mjuk yoga för nybörjare. Ta med en filt eller matta.', location: 'Humlegården, vid statyn', starts_at: relDate(9, 10, 0), max_participants: 15, is_safe_first_meet: false, book_id: null, created_at: relDate(-1) }
+      { id: 7, created_by: 2, title: 'Morgonyoga i parken', description: 'Mjuk yoga för nybörjare. Ta med en filt eller matta.', location: 'Humlegården, vid statyn', starts_at: relDate(9, 10, 0), max_participants: 15, is_safe_first_meet: false, book_id: null, created_at: relDate(-1) },
+      { id: 8, created_by: 10, title: 'Promenad i Humlegården', description: 'En lugn promenad med fika efteråt.', location: 'Humlegården, vid statyn', starts_at: relDate(-2, 16, 0), max_participants: 10, is_safe_first_meet: true, book_id: null, created_at: relDate(-9) }
     ],
 
     activity_participants: [
@@ -184,24 +189,30 @@ function seedData() {
       { activity_id: 3, user_id: 7, joined_at: relDate(-4) },
       { activity_id: 4, user_id: 5, joined_at: relDate(-2) },
       { activity_id: 5, user_id: 3, joined_at: relDate(-1) }, { activity_id: 5, user_id: 6, joined_at: relDate(-1) },
-      { activity_id: 6, user_id: 7, joined_at: relDate(-1) }
+      { activity_id: 6, user_id: 7, joined_at: relDate(-1) },
+      { activity_id: 2, user_id: 1, joined_at: relDate(-1) },
+      { activity_id: 8, user_id: 1, joined_at: relDate(-6) }, { activity_id: 8, user_id: 4, joined_at: relDate(-5) },
+      { activity_id: 8, user_id: 7, joined_at: relDate(-5) }
     ],
 
-    // mood: 1 = Dåligt, 2 = Sådär, 3 = Okej, 4 = Bra, 5 = Toppen
+    // mood: 1 = Dåligt, 2 = Sådär, 3 = Okej, 4 = Bra, 5 = Toppen. activity_id är satt när checken gäller en aktivitet.
     mood_checks: [
-      { id: 1, user_id: 1, mood: 2, created_at: relDate(-6, 9, 0) },
-      { id: 2, user_id: 1, mood: 3, created_at: relDate(-5, 9, 0) },
-      { id: 3, user_id: 1, mood: 3, created_at: relDate(-4, 9, 0) },
-      { id: 4, user_id: 1, mood: 4, created_at: relDate(-3, 9, 0) },
-      { id: 5, user_id: 1, mood: 2, created_at: relDate(-2, 9, 0) },
-      { id: 6, user_id: 1, mood: 4, created_at: relDate(-1, 9, 0) }
+      { id: 1, user_id: 1, mood: 2, created_at: relDate(-6, 9, 0), activity_id: null },
+      { id: 2, user_id: 1, mood: 3, created_at: relDate(-5, 9, 0), activity_id: null },
+      { id: 3, user_id: 1, mood: 3, created_at: relDate(-4, 9, 0), activity_id: null },
+      { id: 4, user_id: 1, mood: 4, created_at: relDate(-3, 9, 0), activity_id: null },
+      { id: 5, user_id: 1, mood: 2, created_at: relDate(-2, 9, 0), activity_id: null },
+      { id: 6, user_id: 1, mood: 4, created_at: relDate(-1, 9, 0), activity_id: null }
     ],
 
+    // En rapport gäller exakt ett av: post_id, group_message_id eller direct_message_id
     reports: [
-      { id: 1, reporter_id: 1, post_id: 6, reason: 'Kränkande', created_at: relDate(-1, 20, 30) },
-      { id: 2, reporter_id: 2, post_id: 6, reason: 'Kränkande', created_at: relDate(-1, 20, 50) },
-      { id: 3, reporter_id: 3, post_id: 6, reason: 'Otrevligt', created_at: relDate(-1, 21, 10) },
-      { id: 4, reporter_id: 5, post_id: 8, reason: 'Reklam eller spam', created_at: relDate(0, 9, 40) }
+      { id: 1, reporter_id: 1, post_id: 6, group_message_id: null, direct_message_id: null, reason: 'Kränkande', created_at: relDate(-1, 20, 30) },
+      { id: 2, reporter_id: 2, post_id: 6, group_message_id: null, direct_message_id: null, reason: 'Kränkande', created_at: relDate(-1, 20, 50) },
+      { id: 3, reporter_id: 3, post_id: 6, group_message_id: null, direct_message_id: null, reason: 'Otrevligt', created_at: relDate(-1, 21, 10) },
+      { id: 4, reporter_id: 5, post_id: 8, group_message_id: null, direct_message_id: null, reason: 'Reklam eller spam', created_at: relDate(0, 9, 40) },
+      { id: 5, reporter_id: 8, post_id: null, group_message_id: 7, direct_message_id: null, reason: 'Kränkande', created_at: relDate(-1, 19, 45) },
+      { id: 6, reporter_id: 5, post_id: null, group_message_id: 7, direct_message_id: null, reason: 'Otrevligt', created_at: relDate(-1, 20, 0) }
     ],
 
     blocks: [
@@ -210,8 +221,8 @@ function seedData() {
 
     // action: 'remove', 'warn', 'suspend' eller 'dismiss' (Inget fel)
     moderation_actions: [
-      { id: 1, moderator_id: 14, user_id: 9, action: 'warn', post_id: null, reason: 'Otrevlig ton i gruppchatten', created_at: relDate(-10) },
-      { id: 2, moderator_id: 14, user_id: 9, action: 'suspend', post_id: null, reason: 'Upprepade kränkningar efter varning', created_at: relDate(-1, 22, 0) }
+      { id: 1, moderator_id: 14, user_id: 9, action: 'warn', post_id: null, group_message_id: null, direct_message_id: null, reason: 'Otrevlig ton i gruppchatten', created_at: relDate(-10) },
+      { id: 2, moderator_id: 14, user_id: 9, action: 'suspend', post_id: null, group_message_id: null, direct_message_id: null, reason: 'Upprepade kränkningar efter varning', created_at: relDate(-1, 22, 0) }
     ],
 
     // När volontärer och kurator brukar vara lediga (weekday 0 = söndag)
@@ -310,6 +321,13 @@ function countWarnings(userId) {
   return db.moderation_actions.filter(a => a.user_id === userId && a.action === 'warn').length;
 }
 
+// Åldersgrupper: unga 15–17 och vuxna 18+ hålls isär i grupper och enskilda samtal
+function isUnder18(userId) { return getAge(userId) < 18; }
+function ageGroupLabel(userId) { return isUnder18(userId) ? '15–17 år' : '18 år och äldre'; }
+function isStaff(userId) { const u = getUser(userId); return !!u && u.role !== 'member'; }
+// Medlemmar får bara skriva enskilt med någon i samma åldersgrupp, eller med volontär, kurator och moderator
+function canMessage(fromId, toId) { return isStaff(fromId) || isStaff(toId) || isUnder18(fromId) === isUnder18(toId); }
+
 function roleLabel(role) {
   return { member: 'Medlem', volunteer: 'Volontär', counselor: 'Kurator', moderator: 'Moderator' }[role] || role;
 }
@@ -327,17 +345,22 @@ function hasReacted(userId, postId, type) {
   return db.support_reactions.some(r => r.user_id === userId && r.post_id === postId && r.type === type);
 }
 
-// Rapporter och moderering
-function countReports(postId) { return db.reports.filter(r => r.post_id === postId).length; }
-function hasReported(userId, postId) { return db.reports.some(r => r.reporter_id === userId && r.post_id === postId); }
-function latestReportTime(postId) {
-  return db.reports.filter(r => r.post_id === postId).reduce((max, r) => r.created_at > max ? r.created_at : max, '');
+// Rapporter och moderering. field = 'post_id', 'group_message_id' eller 'direct_message_id'
+function getReports(field, id) { return db.reports.filter(r => r[field] === id); }
+function countReports(postId) { return getReports('post_id', postId).length; }
+function hasReportedField(userId, field, id) { return db.reports.some(r => r.reporter_id === userId && r[field] === id); }
+function hasReported(userId, postId) { return hasReportedField(userId, 'post_id', postId); }
+function latestReportTime(field, id) {
+  return getReports(field, id).reduce((max, r) => r.created_at > max ? r.created_at : max, '');
 }
-// En moderator har tittat om det finns en åtgärd på inlägget efter senaste rapporten
-function isPostReviewed(postId) {
-  const last = latestReportTime(postId);
-  return db.moderation_actions.some(a => a.post_id === postId && a.created_at >= last);
+// En moderator har tittat om det finns en åtgärd efter senaste rapporten
+function isReviewed(field, id) {
+  const last = latestReportTime(field, id);
+  return db.moderation_actions.some(a => a[field] === id && a.created_at >= last);
 }
+function isPostReviewed(postId) { return isReviewed('post_id', postId); }
+// Chattmeddelanden döljs som inlägg: 3 eller fler rapporter och ingen moderator har tittat
+function isMessageHidden(field, id) { return getReports(field, id).length >= 3 && !isReviewed(field, id); }
 // Dolt = 3 eller fler rapporter och ingen moderator har tittat ännu
 function isPostHidden(postId) { return countReports(postId) >= 3 && !isPostReviewed(postId); }
 function isPostRemoved(postId) { const p = getPost(postId); return !!(p && p.removed_at); }
@@ -354,9 +377,22 @@ function countMembers(groupId) { return db.group_members.filter(m => m.group_id 
 function getGroupMemberIds(groupId) { return db.group_members.filter(m => m.group_id === groupId).map(m => m.user_id); }
 function isMember(groupId, userId) { return db.group_members.some(m => m.group_id === groupId && m.user_id === userId); }
 function isSmallGroup(group) { return group.max_members <= 8; }
+function fitsAgeRange(group, userId) {
+  const age = getAge(userId);
+  return age >= group.min_age && (group.max_age === null || age <= group.max_age);
+}
+function ageRangeLabel(group) {
+  return group.max_age === null ? group.min_age + ' år och äldre' : group.min_age + '–' + group.max_age + ' år';
+}
 function getUserGroups(userId) { return db.groups.filter(g => isMember(g.id, userId)); }
 // Din lilla grupp = första lilla gruppen du är med i
 function getSmallGroup(userId) { return getUserGroups(userId).find(isSmallGroup) || null; }
+// Föreslå en liten grupp som matchar dina intressen och din ålder och har plats kvar
+function suggestGroup(userId) {
+  const interests = getUserInterestIds(userId);
+  const options = db.groups.filter(g => isSmallGroup(g) && !isMember(g.id, userId) && fitsAgeRange(g, userId) && countMembers(g.id) < g.max_members);
+  return options.filter(g => interests.includes(g.interest_id)).sort((a, b) => countMembers(b.id) - countMembers(a.id))[0] || options[0] || null;
+}
 
 // Nästa veckoträff räknas fram från gruppens veckodag och klockslag
 function nextMeetingFrom(group) {
@@ -403,6 +439,30 @@ function upcomingActivities() {
 }
 // Veckans lässtund = nästa aktivitet med en bok
 function nextReading() { return upcomingActivities().find(a => a.book_id) || null; }
+
+// Antal dagar från idag (0 = idag, 1 = imorgon)
+function dayDiff(date) {
+  const a = new Date(date), b = new Date();
+  a.setHours(0, 0, 0, 0); b.setHours(0, 0, 0, 0);
+  return Math.round((a - b) / 86400000);
+}
+// Påminnelser om gruppträffar och aktiviteter idag eller imorgon
+function getReminders(userId) {
+  const list = [];
+  getUserGroups(userId).forEach(g => {
+    const d = nextMeeting(g.id);
+    if (dayDiff(d) <= 1) list.push({ title: g.name, starts_at: d.toISOString(), href: 'grupper.html?grupp=' + g.id, groupId: g.id });
+  });
+  upcomingActivities().filter(a => isParticipant(a.id, userId) && dayDiff(a.starts_at) <= 1)
+    .forEach(a => list.push({ title: a.title, starts_at: a.starts_at, href: 'aktiviteter.html', groupId: null }));
+  return list.sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+}
+// Aktiviteter du var med på de senaste två veckorna men inte har berättat hur de var
+function activitiesToRate(userId) {
+  const now = nowIso(), from = new Date(Date.now() - 14 * 86400000).toISOString();
+  return db.activities.filter(a => a.starts_at < now && a.starts_at > from && isParticipant(a.id, userId) &&
+    !db.mood_checks.some(m => m.user_id === userId && m.activity_id === a.id));
+}
 
 // Direktmeddelanden
 function getConversation(userA, userB) {

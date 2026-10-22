@@ -50,7 +50,8 @@ function conversationPeople() {
     if (m.sender_id === me.id) ids.add(m.receiver_id);
     if (m.receiver_id === me.id) ids.add(m.sender_id);
   });
-  return [...ids].filter(id => getUser(id) && !isBlocked(me.id, id) && !isSuspended(id));
+  // Bara personer i samma åldersgrupp, eller volontärer och kurator
+  return [...ids].filter(id => getUser(id) && !isBlocked(me.id, id) && !isSuspended(id) && canMessage(me.id, id));
 }
 
 function renderConversations() {
@@ -85,7 +86,7 @@ function renderThread() {
   $('#dm-head').innerHTML = '<div class="row">' + avatar(user.id, 'sm') + '<h3>' + escapeHtml(user.alias) + '</h3>' +
     (user.role !== 'member' ? '<span class="badge badge-safe">' + roleLabel(user.role) + '</span>' : '') +
     (user.role === 'member' ? '<button type="button" class="btn btn-sm btn-ghost" id="dm-block" style="margin-left:auto">' + icon('block') + 'Blockera</button>' : '') + '</div>';
-  renderMessages($('#dm-messages'), getConversation(me.id, activePerson), me.id);
+  renderMessages($('#dm-messages'), getConversation(me.id, activePerson), me.id, { field: 'direct_message_id', onChange: renderThread });
   $('#dm-form').hidden = false;
   const blockBtn = $('#dm-block');
   if (blockBtn) blockBtn.addEventListener('click', () => {
@@ -103,8 +104,8 @@ function renderThread() {
 function sendDm(e) {
   e.preventDefault();
   const input = $('#dm-input');
-  if (!activePerson || !checkBeforePublish(input.value, $('#dm-notice'))) return;
-  insertRow('direct_messages', { sender_id: me.id, receiver_id: activePerson, body: input.value.trim(), created_at: nowIso(), read_at: null });
+  if (!activePerson || !canMessage(me.id, activePerson) || !checkBeforePublish(input.value, $('#dm-notice'))) return;
+  insertRow('direct_messages', { sender_id: me.id, receiver_id: activePerson, body: input.value.trim(), created_at: nowIso(), read_at: null, removed_at: null });
   input.value = '';
   renderConversations();
 }
@@ -133,17 +134,7 @@ function renderVolunteers() {
 }
 
 function sendRequest(userId) {
-  insertRow('direct_messages', { sender_id: me.id, receiver_id: userId, body: 'Hej! Jag skulle vilja prata en stund.', created_at: nowIso(), read_at: null });
-  toast('Förfrågan skickad till ' + getAlias(userId) + '.');
+  sendVolunteerRequest(me.id, userId, 'Hej! Jag skulle vilja prata en stund.');
+  toast(getAlias(userId) + ' har svarat dig under Mina samtal.');
   renderVolunteers();
-  // Simulerat svar från volontären (påhittat)
-  setTimeout(() => {
-    const free = isAvailableNow(userId);
-    insertRow('direct_messages', {
-      sender_id: userId, receiver_id: me.id, created_at: nowIso(), read_at: null,
-      body: free ? 'Hej ' + me.alias + '! Vad fint att du hör av dig. Jag har tid nu. Vill du berätta lite om hur du har det?'
-                 : 'Hej ' + me.alias + '! Tack för din förfrågan. Jag är inte ledig just nu men skriver till dig så fort jag kan. Om det är akut, ring 112 eller Självmordslinjen 90101.'
-    });
-    toast(getAlias(userId) + ' har svarat dig under Mina samtal.');
-  }, 2500);
 }

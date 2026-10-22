@@ -9,7 +9,7 @@ function initPage() {
   $('#profile').innerHTML = avatar(me.id, 'lg') +
     '<div><h1 id="profile-title" style="font-size:2rem;margin:0">' + escapeHtml(me.alias) + '</h1>' +
     '<p class="muted" style="margin:0">' + roleLabel(me.role) + ' sedan ' + new Date(me.created_at).getDate() + ' ' + MONTHS[new Date(me.created_at).getMonth()] + ' ' + new Date(me.created_at).getFullYear() +
-    ' · Andra ser bara ditt alias</p></div>';
+    ' · ' + ageGroupLabel(me.id) + ' · Andra ser bara ditt alias</p></div>';
 
   // Inställningar – sparas i localStorage via app.js
   $('#set-theme').addEventListener('change', toggleTheme);

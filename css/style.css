@@ -125,13 +125,13 @@ main { max-width: var(--max); margin: 0 auto; padding: 2rem 1.25rem 4rem; }
 }
 .logo { display: flex; align-items: center; gap: .6rem; text-decoration: none; color: var(--text); font-weight: 800; font-size: 1.2rem; min-height: 44px; }
 .logo-mark { width: 40px; height: 40px; flex: none; }
-.main-nav ul { display: flex; gap: .25rem; list-style: none; margin: 0; padding: 0; }
-.main-nav a {
+.main-nav > ul { display: flex; gap: .25rem; list-style: none; margin: 0; padding: 0; }
+.main-nav > ul > li > a {
   display: flex; align-items: center; min-height: 44px; padding: 0 .8rem; border-radius: 10px;
   color: var(--muted); text-decoration: none; font-weight: 500;
 }
-.main-nav a:hover { color: var(--text); background: var(--card); }
-.main-nav a[aria-current="page"] { color: var(--text); background: var(--accent-soft); }
+.main-nav > ul > li > a:hover { color: var(--text); background: var(--card); }
+.main-nav > ul > li > a[aria-current="page"] { color: var(--text); background: var(--accent-soft); }
 .search-form { position: relative; flex: 1; max-width: 260px; margin-left: auto; }
 .search-form input[type="search"] {
   width: 100%; min-height: 44px; padding: 0 1rem 0 2.5rem;
@@ -442,24 +442,101 @@ legend { font-weight: 700; margin-bottom: .5rem; padding: 0; }
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Menyer ---------- */
+.nav-btn {
+  display: flex; align-items: center; gap: .3rem; min-height: 44px; padding: 0 .8rem; border-radius: 10px;
+  background: none; border: 0; color: var(--muted); font: inherit; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.nav-btn:hover, .nav-btn[aria-expanded="true"] { color: var(--text); background: var(--card); }
+.nav-btn[data-active="true"] { color: var(--text); background: var(--accent-soft); }
+.nav-btn .icon { width: 1em; height: 1em; transition: transform .15s; }
+.nav-btn[aria-expanded="true"] .icon { transform: rotate(180deg); }
+.has-menu { position: relative; }
+.menu-panel {
+  position: absolute; top: calc(100% + 10px); left: 0; z-index: 40; width: 580px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: .5rem 1rem; padding: 1rem;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.menu-panel[hidden], .mobile-menu[hidden] { display: none; }
+.menu-group ul { list-style: none; margin: 0; padding: 0; }
+.menu-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: .25rem .5rem .4rem; }
+.menu-link {
+  display: flex; gap: .75rem; align-items: center; width: 100%; min-height: 56px; padding: .5rem; border-radius: 12px;
+  color: var(--text); text-decoration: none; background: none; border: 0; font: inherit; text-align: left; cursor: pointer;
+}
+.menu-link:hover { background: var(--card-2); color: var(--text); }
+.menu-link[aria-current="page"] { background: var(--accent-soft); }
+.menu-link small { display: block; color: var(--muted); font-size: .82rem; font-weight: 400; }
+.menu-icon { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.menu-all { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: 44px; border-top: 1px solid var(--border); padding-top: .5rem; font-weight: 600; text-decoration: none; }
+.menu-btn { display: none; position: relative; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #f472b6; display: inline-block; margin-left: .2rem; }
+.mobile-menu {
+  border-top: 1px solid var(--border); padding: 1rem 1.25rem 1.5rem; max-height: calc(100vh - 70px); overflow-y: auto;
+  display: grid; gap: .75rem;
+}
+.mobile-menu .search-form { display: block; max-width: none; margin-left: 0; }
+.menu-settings { display: flex; gap: .5rem; flex-wrap: wrap; }
+.menu-settings .btn { flex: 1; }
+
+/* "Du är här" */
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-bottom: 1rem; font-size: .9rem; color: var(--muted); }
+.crumbs a { color: var(--muted); display: inline-flex; align-items: center; min-height: 44px; }
+.crumbs a:hover { color: var(--text); }
+.crumbs [aria-current] { color: var(--text); font-weight: 600; }
+
 /* ---------- Sidfot ---------- */
 .site-footer { border-top: 1px solid var(--border); margin-top: 2rem; }
-.footer-inner { max-width: var(--max); margin: 0 auto; padding: 2rem 1.25rem 6rem; }
-.footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
-.footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
+.footer-inner { max-width: var(--max); margin: 0 auto; padding: 2.5rem 1.25rem 6rem; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 1.5rem; }
+.footer-brand { font-size: 1.15rem; margin-bottom: .25rem; }
+.footer-title { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 .25rem; }
+.footer-links { list-style: none; padding: 0; margin: 0; }
+.footer-links a { display: inline-flex; align-items: center; min-height: 40px; }
 
 /* Bottenmeny (bara mobil) */
 .bottom-nav { display: none; }
 
+/* ---------- Chatt: rapportera och anteckningar ---------- */
+.msg-report {
+  align-self: center; flex: none; width: 44px; height: 44px; display: grid; place-items: center;
+  background: none; border: 0; border-radius: 10px; color: var(--muted); opacity: .5; cursor: pointer;
+}
+.msg-report:hover, .msg-report:focus-visible { opacity: 1; color: var(--danger); }
+.msg-report:disabled { opacity: .25; cursor: default; }
+.msg-note { align-self: center; text-align: center; font-style: italic; list-style: none; }
+
+/* Guide inför första träffen */
+.guide { background: var(--card-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 1rem; }
+.guide summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; color: var(--accent-text); }
+.guide ol { margin: 0 0 1rem; padding-left: 1.2rem; font-size: .92rem; color: var(--muted); }
+.guide li + li { margin-top: .35rem; }
+
+/* Din vecka på startsidan */
+.week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.week-tile { background: var(--card-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; display: flex; flex-direction: column; gap: .35rem; }
+.week-tile .label { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: flex; gap: .4rem; align-items: center; }
+.week-tile strong { font-size: 1.05rem; }
+.week-tile a { margin-top: auto; font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; }
+.reminder-list { list-style: none; padding: 0; margin: 0; }
+.reminder-list li { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; padding: .2rem 0; }
+.btn-wrap { white-space: normal; text-align: left; }
+
 /* ---------- Responsivt ---------- */
 @media (max-width: 1100px) {
-  .search-form { display: none; }
+  .header-inner .search-form { display: none; }
   .account .btn span:not(.avatar) { display: none; }
   .account .btn-primary { display: none; }
+  .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 1360px) {
+  [data-logout] span:not(.menu-icon), .account a[href="moderator.html"] span { display: none; }
+  .menu-link[data-logout] span { display: inline; }
 }
 @media (max-width: 900px) {
   .main-nav { display: none; }
   .header-tools { margin-left: auto; }
+  .menu-btn { display: inline-flex; }
   .hero, .split, .my-group, .conv-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
@@ -477,13 +554,16 @@ legend { font-weight: 700; margin-bottom: .5rem; padding: 0; }
   .bottom-nav a .icon { width: 24px; height: 24px; }
   .bottom-nav a[aria-current="page"] { color: var(--accent-text); }
   .help-fab { bottom: calc(72px + env(safe-area-inset-bottom)); right: .75rem; font-size: .82rem; }
-  .account .btn-ghost:not(#logout-btn):not([href="min-sida.html"]) { display: none; }
-  .account a[href="min-sida.html"], .account a[href="moderator.html"] { display: none; }
-  .account a[href="logga-in.html"] { display: inline-flex; }
+  /* Aa, ljust läge och konto finns i mobilmenyn – bara "Logga in" syns i sidhuvudet */
+  .header-tools > .icon-btn { display: none; }
+  .account > * { display: none !important; }
+  .account a[href="logga-in.html"] { display: inline-flex !important; }
   .mood-buttons { gap: .3rem; }
   .mood-btn { font-size: .72rem; min-height: 70px; }
   .chat { height: 420px; }
   .footer-inner { padding-bottom: 9rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid > div:first-child { grid-column: 1 / -1; }
   .card { padding: 1.15rem; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -492,11 +572,8 @@ legend { font-weight: 700; margin-bottom: .5rem; padding: 0; }
 .h3 { font-size: 1.15rem; }
 #reading-chat { position: sticky; top: 90px; height: 600px; }
 @media (max-width: 900px) { #reading-chat { position: static; height: 460px; } }
-.logo, .main-nav a { white-space: nowrap; }
+.logo, .main-nav > ul > li > a { white-space: nowrap; }
 .search-form { min-width: 170px; }
-@media (max-width: 1360px) {
-  #logout-btn span, .account a[href="moderator.html"] span { display: none; }
-}
 
 /* Chattens meddelanden får aldrig tryckas ihop, och Linkys förslag rullar i sidled på mobil */
 .messages { min-height: 200px; }
@@ -507,3 +584,10 @@ legend { font-weight: 700; margin-bottom: .5rem; padding: 0; }
   .suggestions { flex-wrap: nowrap; overflow-x: auto; padding-bottom: .5rem; }
   .suggestions .chip { flex: none; }
 }
+
+/* Linky: knappar i svaren och "Linky skriver..." */
+.msg-actions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+.typing span { animation: blink 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }

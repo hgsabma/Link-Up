@@ -81,6 +81,12 @@ function formatDate(date) {
   const d = new Date(date);
   return WEEKDAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' kl ' + formatTime(d);
 }
+// "Idag kl 18:00", "Imorgon kl 19:00" eller "Tisdag kl 18:00"
+function whenText(date) {
+  const diff = dayDiff(date);
+  const day = diff === 0 ? 'Idag' : diff === 1 ? 'Imorgon' : WEEKDAYS[new Date(date).getDay()].replace(/^./, c => c.toUpperCase());
+  return day + ' kl ' + formatTime(date);
+}
 // "för 5 min sedan", "igår" osv.
 function timeAgo(date) {
   const diff = (Date.now() - new Date(date).getTime()) / 60000;
@@ -144,7 +150,9 @@ const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   text: '<path d="M4 19l5-14 5 14M5.8 14h6.4M15 19l3-8 3 8M15.9 16.6h4.2"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
-  leaf: '<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l7-7"/>'
+  leaf: '<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l7-7"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  chevron: '<path d="M7 10l5 5 5-5"/>'
 };
 function icon(name, extraClass) {
   return '<svg class="icon ' + (extraClass || '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>';
@@ -244,17 +252,29 @@ function helpBoxHtml() {
 function openHelp(concern) {
   const dialog = $('#help-dialog');
   $('#help-concern').hidden = !concern;
+  $('#help-volunteer').innerHTML = '';
+  $('#help-volunteer-btn').disabled = false;
   if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
 }
 
-// ---------- Sidhuvud, bottenmeny och sidfot ----------
+// ---------- Sidans struktur ----------
 
-const NAV_DESKTOP = [
-  { href: 'index.html', label: 'Hem', page: 'hem' },
-  { href: 'utforska.html', label: 'Utforska', page: 'utforska' },
-  { href: 'aktiviteter.html', label: 'Aktiviteter', page: 'aktiviteter' },
-  { href: 'lasstund.html', label: 'Lässtunder', page: 'lasstund' },
-  { href: 'om-oss.html', label: 'Om oss', page: 'om-oss' }
+// Alla sidor samlade på ett ställe. Används i menyerna, "Du är här", sidfoten och på Utforska.
+const SECTIONS = [
+  { id: 'prata', title: 'Prata', items: [
+    { href: 'amnen.html', label: 'Ämnen', page: 'amnen', icon: 'chat', desc: 'Läs och skriv om hur du har det' },
+    { href: 'samtal.html', label: 'Samtal', page: 'samtal', icon: 'heart', desc: 'Skriv enskilt eller med en volontär' },
+    { href: 'linky.html', label: 'Linky', page: 'linky', icon: 'sparkle', desc: 'AI som hjälper dig hitta rätt' }
+  ] },
+  { id: 'traffas', title: 'Träffas', items: [
+    { href: 'grupper.html', label: 'Grupper', page: 'grupper', icon: 'users', desc: 'Din lilla grupp som ses varje vecka' },
+    { href: 'aktiviteter.html', label: 'Aktiviteter', page: 'aktiviteter', icon: 'calendar', desc: 'Promenader, plugg och spelkvällar' },
+    { href: 'lasstund.html', label: 'Lässtunder', page: 'lasstund', icon: 'book', desc: 'Lyssna när någon läser högt' }
+  ] },
+  { id: 'om', title: 'Om Link Up', items: [
+    { href: 'om-oss.html', label: 'Om oss', page: 'om-oss', icon: 'info', desc: 'Vilka vi är och vad vi står för' },
+    { href: 'regler.html', label: 'Regler', page: 'regler', icon: 'shield', desc: 'Så är vi mot varandra' }
+  ] }
 ];
 const NAV_MOBILE = [
   { href: 'index.html', label: 'Hem', page: 'hem', icon: 'home' },
@@ -263,13 +283,44 @@ const NAV_MOBILE = [
   { href: 'aktiviteter.html', label: 'Aktiviteter', page: 'aktiviteter', icon: 'calendar' },
   { href: 'min-sida.html', label: 'Min sida', page: 'min-sida', icon: 'user' }
 ];
-// Sidor som räknas till "Utforska" i menyn
+// Sidor som ligger under "Utforska" i datormenyn
 const EXPLORE_PAGES = ['utforska', 'amnen', 'grupper', 'samtal', 'linky', 'sok'];
+
+function findSection(page) { return SECTIONS.find(s => s.items.some(i => i.page === page)) || null; }
+
+// Grupperade länkar med ikon och kort förklaring
+function menuLinksHtml(sections, page, unread) {
+  return sections.map(s =>
+    '<div class="menu-group"><h2 class="menu-title">' + s.title + '</h2><ul>' +
+    s.items.map(i =>
+      '<li><a class="menu-link" href="' + i.href + '"' + (i.page === page ? ' aria-current="page"' : '') + '>' +
+      '<span class="menu-icon">' + icon(i.icon) + '</span>' +
+      '<span><strong>' + i.label + '</strong>' + (i.page === 'samtal' && unread ? ' <span class="badge badge-accent">' + unread + ' nytt</span>' : '') +
+      '<small>' + i.desc + '</small></span></a></li>').join('') +
+    '</ul></div>').join('');
+}
+
+// Öppna och stäng en meny med knapp, klick utanför och Escape
+function setupMenu(btn, panel) {
+  const close = () => { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = panel.hidden;
+    panel.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', e => { if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { close(); btn.focus(); } });
+}
+
+// ---------- Sidhuvud, menyer och sidfot ----------
 
 function renderLayout() {
   const page = document.body.dataset.page;
   const user = currentUser();
-  const isActive = item => item.page === page || (item.page === 'utforska' && EXPLORE_PAGES.includes(page));
+  const unread = user ? countUnread(user.id) : 0;
+  const cur = p => (p === page ? ' aria-current="page"' : '');
+  const dot = unread ? '<span class="dot" aria-hidden="true"></span>' : '';
 
   // Hoppa till innehåll
   document.body.insertAdjacentHTML('afterbegin', '<a class="skip-link" href="#main">Hoppa till innehållet</a>');
@@ -277,9 +328,15 @@ function renderLayout() {
   const accountHtml = user
     ? '<a class="btn btn-ghost btn-sm" href="min-sida.html">' + avatar(user.id, 'sm') + '<span>' + escapeHtml(user.alias) + '</span></a>' +
       (user.role === 'moderator' ? '<a class="btn btn-ghost btn-sm" href="moderator.html" aria-label="Moderator">' + icon('shield') + '<span>Moderator</span></a>' : '') +
-      '<button type="button" class="btn btn-ghost btn-sm" id="logout-btn" aria-label="Logga ut">' + icon('logout') + '<span>Logga ut</span></button>'
+      '<button type="button" class="btn btn-ghost btn-sm" data-logout aria-label="Logga ut">' + icon('logout') + '<span>Logga ut</span></button>'
     : '<a class="btn btn-ghost btn-sm" href="logga-in.html">Logga in</a>' +
       '<a class="btn btn-primary btn-sm" href="logga-in.html?nytt=1">Skapa konto med BankID</a>';
+
+  const searchHtml = id =>
+    '<form class="search-form" action="sok.html" role="search">' +
+      '<label class="sr-only" for="' + id + '">Sök på Link Up</label>' + icon('search', 'search-icon') +
+      '<input id="' + id + '" name="q" type="search" placeholder="Sök ämnen, grupper..." autocomplete="off">' +
+    '</form>';
 
   const header = document.createElement('header');
   header.className = 'site-header';
@@ -287,47 +344,77 @@ function renderLayout() {
     '<div class="header-inner">' +
       '<a class="logo" href="index.html" aria-label="Link Up, till startsidan">' + LOGO_MARK + '<span class="logo-text">Link Up</span></a>' +
       '<nav class="main-nav" aria-label="Huvudmeny"><ul>' +
-        NAV_DESKTOP.map(i => '<li><a href="' + i.href + '"' + (isActive(i) ? ' aria-current="page"' : '') + '>' + i.label + '</a></li>').join('') +
+        '<li><a href="index.html"' + cur('hem') + '>Hem</a></li>' +
+        '<li class="has-menu"><button type="button" class="nav-btn" id="explore-btn" aria-expanded="false" aria-controls="explore-menu"' +
+          (EXPLORE_PAGES.includes(page) ? ' data-active="true"' : '') + '>Utforska' + dot + icon('chevron') + '</button>' +
+          '<div class="menu-panel" id="explore-menu" hidden>' + menuLinksHtml(SECTIONS.slice(0, 2), page, unread) +
+          '<a class="menu-all" href="utforska.html">Se allt på Link Up ' + icon('arrow') + '</a></div></li>' +
+        '<li><a href="aktiviteter.html"' + cur('aktiviteter') + '>Aktiviteter</a></li>' +
+        '<li><a href="lasstund.html"' + cur('lasstund') + '>Lässtunder</a></li>' +
+        '<li><a href="om-oss.html"' + cur('om-oss') + '>Om oss</a></li>' +
       '</ul></nav>' +
-      '<form class="search-form" action="sok.html" role="search">' +
-        '<label class="sr-only" for="site-search">Sök på Link Up</label>' +
-        icon('search', 'search-icon') +
-        '<input id="site-search" name="q" type="search" placeholder="Sök ämnen, grupper..." autocomplete="off">' +
-      '</form>' +
+      searchHtml('site-search') +
       '<div class="header-tools">' +
-        '<button type="button" class="icon-btn" id="text-btn" aria-pressed="false" title="Större text"><span aria-hidden="true" class="aa">Aa</span><span class="sr-only">Större text</span></button>' +
-        '<button type="button" class="icon-btn" id="theme-btn" aria-pressed="false" title="Ljust läge"><span id="theme-icon"></span><span class="sr-only">Ljust läge</span></button>' +
+        '<button type="button" class="icon-btn" data-toggle="text" aria-pressed="false" title="Större text"><span aria-hidden="true" class="aa">Aa</span><span class="sr-only">Större text</span></button>' +
+        '<button type="button" class="icon-btn" data-toggle="theme" aria-pressed="false" title="Ljust läge"><span class="toggle-icon"></span><span class="sr-only">Ljust läge</span></button>' +
         '<div class="account">' + accountHtml + '</div>' +
+        '<button type="button" class="btn btn-secondary btn-sm menu-btn" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu">' + icon('menu') + 'Meny' + dot + '</button>' +
+      '</div>' +
+    '</div>' +
+    // Mobilmeny: hela sidans struktur, konto och inställningar
+    '<div class="mobile-menu" id="mobile-menu" hidden>' +
+      searchHtml('mobile-search') +
+      menuLinksHtml(SECTIONS, page, unread) +
+      '<div class="menu-group"><h2 class="menu-title">Du</h2><ul>' +
+        (user
+          ? '<li><a class="menu-link" href="min-sida.html"' + cur('min-sida') + '><span class="menu-icon">' + icon('user') + '</span><span><strong>Min sida</strong><small>' + escapeHtml(user.alias) + '</small></span></a></li>' +
+            (user.role === 'moderator' ? '<li><a class="menu-link" href="moderator.html"' + cur('moderator') + '><span class="menu-icon">' + icon('shield') + '</span><span><strong>Moderator</strong><small>Granska rapporter</small></span></a></li>' : '') +
+            '<li><button type="button" class="menu-link" data-logout><span class="menu-icon">' + icon('logout') + '</span><span><strong>Logga ut</strong></span></button></li>'
+          : '<li><a class="menu-link" href="logga-in.html"><span class="menu-icon">' + icon('user') + '</span><span><strong>Logga in</strong><small>Med BankID</small></span></a></li>' +
+            '<li><a class="menu-link" href="logga-in.html?nytt=1"><span class="menu-icon">' + icon('plus') + '</span><span><strong>Skapa konto</strong><small>Med BankID, från 15 år</small></span></a></li>') +
+      '</ul></div>' +
+      '<div class="menu-settings">' +
+        '<button type="button" class="btn btn-secondary" data-toggle="text" aria-pressed="false"><span aria-hidden="true" class="aa">Aa</span>Större text</button>' +
+        '<button type="button" class="btn btn-secondary" data-toggle="theme" aria-pressed="false"><span class="toggle-icon"></span>Ljust läge</button>' +
       '</div>' +
     '</div>';
   document.body.prepend(header);
   document.body.prepend($('.skip-link'));
+
+  // "Du är här" överst på sidor som hör till en del av Link Up
+  const section = findSection(page), main = $('#main');
+  if (section && main) {
+    const item = section.items.find(i => i.page === page);
+    main.insertAdjacentHTML('afterbegin', '<nav class="crumbs" aria-label="Du är här"><a href="index.html">Hem</a><span aria-hidden="true">/</span>' +
+      '<a href="utforska.html#' + section.id + '">' + section.title + '</a><span aria-hidden="true">/</span><span aria-current="page">' + item.label + '</span></nav>');
+  }
 
   // Bottenmeny på mobil
   const bottom = document.createElement('nav');
   bottom.className = 'bottom-nav';
   bottom.setAttribute('aria-label', 'Mobilmeny');
   bottom.innerHTML = '<ul>' + NAV_MOBILE.map(i =>
-    '<li><a href="' + i.href + '"' + (i.page === page ? ' aria-current="page"' : '') + '>' + icon(i.icon) + '<span>' + i.label + '</span></a></li>'
+    '<li><a href="' + i.href + '"' + cur(i.page) + '>' + icon(i.icon) + '<span>' + i.label + '</span></a></li>'
   ).join('') + '</ul>';
   document.body.appendChild(bottom);
 
-  // Sidfot
+  // Sidfot med samma struktur som menyn
   const footer = document.createElement('footer');
   footer.className = 'site-footer';
   footer.innerHTML =
-    '<div class="footer-inner">' +
-      '<p><strong>Link Up</strong> – Du är inte ensam. Ett elevprojekt på Hitachigymnasiet.</p>' +
-      '<p class="muted">Link Up är inte vård och ställer inga diagnoser. All data på sidan är påhittad.</p>' +
-      '<nav aria-label="Sidfot"><ul class="footer-links">' +
-        '<li><a href="om-oss.html">Om oss</a></li><li><a href="regler.html">Regler</a></li>' +
-        '<li><a href="utforska.html">Utforska</a></li><li><a href="samtal.html">Samtal</a></li><li><a href="linky.html">Linky</a></li>' +
-        (user && user.role === 'moderator' ? '<li><a href="moderator.html">Moderator</a></li>' : '') +
-      '</ul></nav>' +
-    '</div>';
+    '<div class="footer-inner"><div class="footer-grid">' +
+      '<div><p class="footer-brand"><strong>Link Up</strong></p><p class="muted">Du är inte ensam.</p>' +
+      '<p class="muted small">Link Up är inte vård och ställer inga diagnoser. All data på sidan är påhittad.</p></div>' +
+      SECTIONS.map(s => '<nav aria-label="' + s.title + '"><h2 class="footer-title">' + s.title + '</h2><ul class="footer-links">' +
+        s.items.map(i => '<li><a href="' + i.href + '">' + i.label + '</a></li>').join('') +
+        (s.id === 'om' && user && user.role === 'moderator' ? '<li><a href="moderator.html">Moderator</a></li>' : '') + '</ul></nav>').join('') +
+      '<div><h2 class="footer-title">Behöver du hjälp nu?</h2><ul class="footer-links">' +
+        '<li><a href="tel:112">112 – akut fara</a></li><li><a href="tel:1177">1177 – råd om vård</a></li><li><a href="tel:90101">90101 – Självmordslinjen</a></li>' +
+      '</ul></div>' +
+    '</div></div>';
   document.body.appendChild(footer);
 
-  // Hjälpknapp och hjälpruta
+  // Hjälpknapp, hjälpruta och rapportruta
   document.body.insertAdjacentHTML('beforeend',
     '<button type="button" class="help-fab" id="help-btn">' + icon('heart') + '<span>Behöver du hjälp nu?</span></button>' +
     '<dialog class="dialog" id="help-dialog" aria-labelledby="help-title">' +
@@ -336,56 +423,152 @@ function renderLayout() {
       '<p id="help-concern" class="notice notice-warm" hidden>Det du skrev låter tungt. Tack för att du delar det. Du förtjänar att få prata med någon direkt – ring gärna någon av numren nedan.</p>' +
       '<p>Du behöver inte klara allt själv. Här kan du få prata med någon direkt:</p>' +
       helpBoxHtml() +
+      '<div id="help-volunteer" role="status"></div>' +
       '<p class="muted small">Link Up är inte vård. Vid akut fara, ring alltid 112.</p>' +
-      '<div class="dialog-actions"><a class="btn btn-secondary" href="samtal.html?flik=volontar">Prata med en volontär</a><button type="button" class="btn btn-primary" data-close>Stäng</button></div>' +
+      '<div class="dialog-actions">' +
+        '<button type="button" class="btn btn-secondary btn-wrap" id="help-volunteer-btn">' + icon('hand') + 'Vill du att en volontär hör av sig?</button>' +
+        '<button type="button" class="btn btn-primary" data-close>Stäng</button></div>' +
+    '</dialog>' +
+    '<dialog class="dialog" id="report-dialog" aria-labelledby="report-title">' +
+      '<form method="dialog" id="report-form">' +
+        '<div class="dialog-head"><h2 id="report-title">Rapportera</h2></div>' +
+        '<p class="muted">En moderator tittar på det. Den du rapporterar får inte veta att det var du.</p>' +
+        '<fieldset><legend>Varför rapporterar du?</legend>' +
+          ['Kränkande eller elakt', 'Reklam eller spam', 'Delar personuppgifter', 'Får mig att känna mig obekväm', 'Jag är orolig för personen'].map((r, i) =>
+            '<label class="check"><input type="radio" name="reason" value="' + r + '"' + (i === 0 ? ' checked' : '') + '> ' + r + '</label>').join('') +
+        '</fieldset>' +
+        '<div class="dialog-actions"><button type="button" class="btn btn-ghost" id="report-cancel">Avbryt</button>' +
+        '<button type="submit" class="btn btn-primary">Skicka rapport</button></div>' +
+      '</form>' +
     '</dialog>');
 
   // Ikoner i statisk HTML: <a data-icon="plus">
   $$('[data-icon]').forEach(el => el.insertAdjacentHTML('afterbegin', icon(el.dataset.icon)));
 
+  // Menyer
+  setupMenu($('#explore-btn'), $('#explore-menu'));
+  setupMenu($('#menu-btn'), $('#mobile-menu'));
+
   // Knappar
   $('#help-btn').addEventListener('click', () => openHelp(false));
   $$('#help-dialog [data-close]').forEach(b => b.addEventListener('click', () => $('#help-dialog').close()));
-  $('#text-btn').addEventListener('click', toggleTextSize);
-  $('#theme-btn').addEventListener('click', toggleTheme);
-  const logoutBtn = $('#logout-btn');
-  if (logoutBtn) logoutBtn.addEventListener('click', logout);
+  $('#help-volunteer-btn').addEventListener('click', askVolunteerFromHelp);
+  $('#report-cancel').addEventListener('click', () => $('#report-dialog').close());
+  $('#report-form').addEventListener('submit', submitReport);
+  $$('[data-toggle="text"]').forEach(b => b.addEventListener('click', toggleTextSize));
+  $$('[data-toggle="theme"]').forEach(b => b.addEventListener('click', toggleTheme));
+  $$('[data-logout]').forEach(b => b.addEventListener('click', logout));
   // Behåll sökordet i sökfältet
   const q = new URLSearchParams(location.search).get('q');
   if (q && page === 'sok') $('#site-search').value = q;
   updateSettingButtons();
 }
 
-// Uppdatera knapparnas läge (aria-pressed och ikon)
+// Uppdatera knapparnas läge (aria-pressed och ikon) överallt där de finns
 function updateSettingButtons() {
   const light = getSetting(THEME_KEY, 'dark') === 'light';
   const large = getSetting(TEXT_KEY, 'normal') === 'large';
-  const themeBtn = $('#theme-btn'), textBtn = $('#text-btn');
-  if (themeBtn) {
-    themeBtn.setAttribute('aria-pressed', String(light));
-    themeBtn.title = light ? 'Mörkt läge' : 'Ljust läge';
-    $('.sr-only', themeBtn).textContent = 'Ljust läge';
-    $('#theme-icon').innerHTML = icon(light ? 'moon' : 'sun');
-  }
-  if (textBtn) textBtn.setAttribute('aria-pressed', String(large));
+  $$('[data-toggle="theme"]').forEach(b => {
+    b.setAttribute('aria-pressed', String(light));
+    b.title = light ? 'Mörkt läge' : 'Ljust läge';
+    const ic = $('.toggle-icon', b);
+    if (ic) ic.innerHTML = icon(light ? 'moon' : 'sun');
+  });
+  $$('[data-toggle="text"]').forEach(b => b.setAttribute('aria-pressed', String(large)));
   // Reglage på Min sida
   $$('[data-setting="theme"]').forEach(el => { el.checked = light; });
   $$('[data-setting="text"]').forEach(el => { el.checked = large; });
 }
 
-// ---------- Gemensam chatt (gruppchatt, lässtund) ----------
+// ---------- Rapportera (inlägg och chattmeddelanden) ----------
+
+let reportTarget = null;
+
+// field = 'post_id', 'group_message_id' eller 'direct_message_id'
+function openReportDialog(field, id, onDone) {
+  reportTarget = { field: field, id: id, onDone: onDone };
+  $('#report-title').textContent = field === 'post_id' ? 'Rapportera inlägg' : 'Rapportera meddelande';
+  $('#report-dialog').showModal();
+}
+function submitReport() {
+  const user = currentUser();
+  if (!reportTarget || !user || hasReportedField(user.id, reportTarget.field, reportTarget.id)) return;
+  const row = { reporter_id: user.id, post_id: null, group_message_id: null, direct_message_id: null,
+    reason: new FormData($('#report-form')).get('reason'), created_at: nowIso() };
+  row[reportTarget.field] = reportTarget.id;
+  insertRow('reports', row);
+  toast('Tack! En moderator tittar på det.');
+  if (reportTarget.onDone) reportTarget.onDone();
+}
+
+// ---------- Volontärer ----------
+
+// Skicka en förfrågan till en volontär. Utan volunteerId väljs någon som är ledig nu, annars kuratorn.
+// Volontärens svar är simulerat i prototypen. Returnerar volontärens id.
+function sendVolunteerRequest(userId, volunteerId, body) {
+  const staff = db.users.filter(u => u.role === 'volunteer' || u.role === 'counselor');
+  const id = volunteerId || (staff.find(u => isAvailableNow(u.id)) || staff.find(u => u.role === 'counselor') || staff[0]).id;
+  const name = getAlias(userId);
+  insertRow('direct_messages', { sender_id: userId, receiver_id: id, body: body, created_at: nowIso(), read_at: null, removed_at: null });
+  insertRow('direct_messages', { sender_id: id, receiver_id: userId, created_at: nowIso(), read_at: null, removed_at: null,
+    body: isAvailableNow(id)
+      ? 'Hej ' + name + '! Vad fint att du hör av dig. Jag har tid nu. Vill du berätta lite om hur du har det?'
+      : 'Hej ' + name + '! Tack för att du hör av dig. Jag är inte ledig just nu men skriver till dig så fort jag kan. Om det är akut, ring 112 eller Självmordslinjen 90101.' });
+  return id;
+}
+
+// Knappen "Vill du att en volontär hör av sig?" i hjälprutan
+function askVolunteerFromHelp() {
+  const user = currentUser(), box = $('#help-volunteer');
+  if (!user) {
+    box.innerHTML = '<p class="notice small"><a href="logga-in.html">Logga in</a> så kan en volontär skriva till dig. Du kan alltid ringa numren ovan direkt.</p>';
+    return;
+  }
+  const id = sendVolunteerRequest(user.id, null, 'Jag behöver prata med någon. Kan du höra av dig?');
+  box.innerHTML = '<p class="notice notice-success small"><strong>' + escapeHtml(getAlias(id)) + '</strong> har fått din förfrågan och svarat dig. ' +
+    '<a href="samtal.html?person=' + id + '">Öppna samtalet</a></p>';
+  $('#help-volunteer-btn').disabled = true;
+}
+
+// ---------- Guide inför första träffen ----------
+
+function firstMeetGuideHtml(a) {
+  const host = getUser(a.created_by);
+  const who = host && host.role !== 'member' ? host.alias : 'En volontär från Link Up';
+  return '<details class="guide"><summary>Första gången? Så går träffen till</summary><ol>' +
+    '<li>' + escapeHtml(who) + ' möter dig vid ' + escapeHtml(a.location) + ' tio minuter innan. Leta efter den lila Link Up-skylten.</li>' +
+    '<li>Du får ta med en kompis.</li>' +
+    '<li>Andra ser bara ditt alias. Du bestämmer själv vad du berättar.</li>' +
+    '<li>Du kan gå när du vill, utan att förklara varför.</li>' +
+    '<li>Känns något fel? Säg till volontären. Vid fara, ring 112.</li>' +
+  '</ol></details>';
+}
+
+// ---------- Gemensam chatt (gruppchatt, lässtund, enskilda samtal) ----------
 
 // Rita upp en lista med meddelanden. Meddelanden från blockerade användare visas inte.
-function renderMessages(listEl, messages, myId) {
+// opts.field = 'group_message_id' eller 'direct_message_id' ger en rapportknapp, opts.onChange ritar om chatten.
+function renderMessages(listEl, messages, myId, opts) {
+  opts = opts || {};
   const visible = messages.filter(m => !myId || !isBlocked(myId, m.user_id || m.sender_id));
   listEl.innerHTML = visible.length ? visible.map(m => {
     const from = m.user_id || m.sender_id;
     const mine = from === myId;
+    if (m.removed_at) return '<li class="msg-note muted small">Ett meddelande togs bort av en moderator.</li>';
+    if (opts.field && !mine && isMessageHidden(opts.field, m.id)) return '<li class="msg-note muted small">Ett meddelande är dolt medan en moderator tittar på det.</li>';
+    const canReport = opts.field && myId && !mine;
+    const reported = canReport && hasReportedField(myId, opts.field, m.id);
     return '<li class="msg' + (mine ? ' msg-mine' : '') + '">' +
       (mine ? '' : avatar(from, 'sm')) +
       '<div class="msg-bubble"><span class="msg-meta">' + escapeHtml(mine ? 'Du' : getAlias(from)) + ' · ' + timeAgo(m.created_at) + '</span>' +
-      '<p>' + escapeHtml(m.body) + '</p></div></li>';
+      '<p>' + escapeHtml(m.body) + '</p></div>' +
+      (canReport ? '<button type="button" class="msg-report" data-report-msg="' + m.id + '"' + (reported ? ' disabled' : '') +
+        ' aria-label="' + (reported ? 'Meddelandet är rapporterat' : 'Rapportera meddelandet från ' + escapeHtml(getAlias(from))) + '"' +
+        ' title="' + (reported ? 'Rapporterat' : 'Rapportera') + '">' + icon('flag') + '</button>' : '') +
+    '</li>';
   }).join('') : '<li class="muted empty">Inga meddelanden än. Säg gärna hej!</li>';
+  $$('[data-report-msg]', listEl).forEach(b => b.addEventListener('click', () =>
+    openReportDialog(opts.field, Number(b.dataset.reportMsg), opts.onChange)));
   listEl.scrollTop = listEl.scrollHeight;
 }
 
@@ -417,6 +600,7 @@ function activityCardHtml(a, me) {
       '<li>' + icon('users') + count + ' av ' + a.max_participants + ' deltagare</li>' +
     '</ul>' +
     '<div class="progress" aria-hidden="true"><span style="width:' + Math.min(100, Math.round(count / a.max_participants * 100)) + '%"></span></div>' +
+    (a.is_safe_first_meet ? firstMeetGuideHtml(a) : '') +
     button +
   '</article>';
 }

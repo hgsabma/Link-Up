@@ -107,7 +107,7 @@ function step(dir) {
 // Jag vill läsa högt – skickar en förfrågan till volontären som leder lässtunden
 function wantToReadAloud() {
   const readerId = reading ? reading.created_by : 10;
-  insertRow('direct_messages', { sender_id: me.id, receiver_id: readerId, body: 'Hej! Jag skulle vilja läsa högt på en lässtund.', created_at: nowIso(), read_at: null });
+  insertRow('direct_messages', { sender_id: me.id, receiver_id: readerId, body: 'Hej! Jag skulle vilja läsa högt på en lässtund.', created_at: nowIso(), read_at: null, removed_at: null });
   const n = $('#readaloud-notice');
   n.innerHTML = '<p>Vad roligt! Vi har skickat ett meddelande till <strong>' + escapeHtml(getAlias(readerId)) + '</strong> som hör av sig om när du kan läsa. Du hittar samtalet under <a href="samtal.html">Samtal</a>.</p>';
   n.hidden = false;
@@ -120,7 +120,7 @@ function renderChat() {
   const member = isMember(READING_GROUP_ID, me.id);
   $('#chat-sub').textContent = getGroup(READING_GROUP_ID).name + (member ? '' : ' · du går med när du skriver');
   const msgs = db.group_messages.filter(m => m.group_id === READING_GROUP_ID).sort((a, b) => a.created_at.localeCompare(b.created_at));
-  renderMessages($('#reading-messages'), msgs, me.id);
+  renderMessages($('#reading-messages'), msgs, me.id, { field: 'group_message_id', onChange: renderChat });
 }
 
 function sendChat(e) {
@@ -131,7 +131,7 @@ function sendChat(e) {
     insertRow('group_members', { group_id: READING_GROUP_ID, user_id: me.id, joined_at: nowIso() }, false);
     toast('Du gick med i ' + getGroup(READING_GROUP_ID).name + '.');
   }
-  insertRow('group_messages', { group_id: READING_GROUP_ID, user_id: me.id, body: input.value.trim(), created_at: nowIso() });
+  insertRow('group_messages', { group_id: READING_GROUP_ID, user_id: me.id, body: input.value.trim(), created_at: nowIso(), removed_at: null });
   input.value = '';
   renderChat();
 }
