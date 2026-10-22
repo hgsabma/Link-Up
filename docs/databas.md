@@ -9,6 +9,174 @@ All data i prototypen är påhittad. Den ligger i `js/data.js` som **normalisera
 - Inga listor i fält. Varje N:M-relation har en egen kopplingstabell.
 - Inget sparas som kan räknas fram. Det sköts av hjälpfunktioner i `js/data.js`.
 
+## ER-diagram
+
+GitHub ritar diagrammet automatiskt. `||--o{` betyder "en till många", `|o--o{` betyder "noll eller en till många" (fältet får vara tomt).
+
+```mermaid
+erDiagram
+    users {
+        int id PK
+        string bankid_hash UK
+        string alias UK
+        date birth_date
+        string role
+        datetime created_at
+    }
+    interests {
+        int id PK
+        string name UK
+    }
+    user_interests {
+        int user_id PK, FK
+        int interest_id PK, FK
+    }
+    topics {
+        int id PK
+        string name UK
+    }
+    posts {
+        int id PK
+        int user_id FK
+        int topic_id FK
+        string body
+        datetime created_at
+        datetime removed_at
+    }
+    replies {
+        int id PK
+        int post_id FK
+        int user_id FK
+        string body
+        datetime created_at
+    }
+    support_reactions {
+        int user_id PK, FK
+        int post_id PK, FK
+        string type PK
+        datetime created_at
+    }
+    groups {
+        int id PK
+        string name UK
+        string description
+        int interest_id FK
+        int max_members
+        datetime created_at
+    }
+    group_members {
+        int group_id PK, FK
+        int user_id PK, FK
+        datetime joined_at
+    }
+    group_messages {
+        int id PK
+        int group_id FK
+        int user_id FK
+        string body
+        datetime created_at
+    }
+    group_attendance {
+        int group_id PK, FK
+        int user_id PK, FK
+        date meeting_date PK
+    }
+    direct_messages {
+        int id PK
+        int sender_id FK
+        int receiver_id FK
+        string body
+        datetime created_at
+        datetime read_at
+    }
+    books {
+        int id PK
+        string title
+        string author
+    }
+    activities {
+        int id PK
+        int created_by FK
+        string title
+        string description
+        string location
+        datetime starts_at
+        int max_participants
+        boolean is_safe_first_meet
+        int book_id FK
+        datetime created_at
+    }
+    activity_participants {
+        int activity_id PK, FK
+        int user_id PK, FK
+        datetime joined_at
+    }
+    mood_checks {
+        int id PK
+        int user_id FK
+        int mood
+        datetime created_at
+    }
+    reports {
+        int id PK
+        int reporter_id FK, UK
+        int post_id FK, UK
+        string reason
+        datetime created_at
+    }
+    blocks {
+        int blocker_id PK, FK
+        int blocked_id PK, FK
+        datetime created_at
+    }
+    moderation_actions {
+        int id PK
+        int moderator_id FK
+        int user_id FK
+        string action
+        int post_id FK
+        string reason
+        datetime created_at
+    }
+    volunteer_hours {
+        int user_id FK
+        int weekday
+        int start_hour
+        int end_hour
+    }
+
+    users ||--o{ user_interests : "väljer"
+    interests ||--o{ user_interests : "väljs av"
+    users ||--o{ posts : "skriver"
+    topics ||--o{ posts : "samlar"
+    posts ||--o{ replies : "får"
+    users ||--o{ replies : "skriver"
+    users ||--o{ support_reactions : "ger"
+    posts ||--o{ support_reactions : "får"
+    interests ||--o{ groups : "tema för"
+    groups ||--o{ group_members : "har"
+    users ||--o{ group_members : "är med i"
+    groups ||--o{ group_messages : "har"
+    users ||--o{ group_messages : "skriver"
+    groups ||--o{ group_attendance : "har träffar"
+    users ||--o{ group_attendance : "kommer till"
+    users ||--o{ direct_messages : "skickar"
+    users ||--o{ direct_messages : "tar emot"
+    users ||--o{ activities : "skapar"
+    books |o--o{ activities : "läses på"
+    activities ||--o{ activity_participants : "har"
+    users ||--o{ activity_participants : "deltar i"
+    users ||--o{ mood_checks : "gör"
+    users ||--o{ reports : "rapporterar"
+    posts ||--o{ reports : "rapporteras i"
+    users ||--o{ blocks : "blockerar"
+    users ||--o{ blocks : "blockeras"
+    users ||--o{ moderation_actions : "modererar"
+    users ||--o{ moderation_actions : "gäller"
+    posts |o--o{ moderation_actions : "gäller"
+    users ||--o{ volunteer_hours : "är ledig"
+```
+
 ## Tabeller
 
 PK = primärnyckel, FK = främmande nyckel (pekar på en annan tabell).
