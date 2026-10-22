@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sv" data-auth="required">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Samtal – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/samtal.js" defer></script>
+</head>
+<body data-page="samtal">
+  <main id="main">
+    <div class="page-head">
+      <h1>Samtal</h1>
+      <p>Skriv enskilt med någon i dina grupper, eller be om ett samtal med en volontär eller kurator.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Samtal">
+      <button type="button" class="tab" role="tab" id="tab-mina" aria-controls="panel-mina" aria-selected="true">Mina samtal</button>
+      <button type="button" class="tab" role="tab" id="tab-volontar" aria-controls="panel-volontar" aria-selected="false" tabindex="-1">Prata med en volontär</button>
+    </div>
+
+    <!-- Mina samtal -->
+    <section id="panel-mina" role="tabpanel" aria-labelledby="tab-mina">
+      <div class="conv-layout">
+        <div>
+          <h2 class="h3">Personer i dina grupper</h2>
+          <ul class="conv-list" id="conv-list"></ul>
+        </div>
+        <div class="card chat" id="dm-chat" aria-live="polite">
+          <div class="chat-head" id="dm-head"><h3>Välj någon att skriva till</h3></div>
+          <ul class="messages" id="dm-messages"><li class="muted empty">Välj en person i listan för att börja skriva.</li></ul>
+          <div class="notice notice-warm small" id="dm-notice" hidden role="alert"></div>
+          <form class="chat-form" id="dm-form" hidden>
+            <label class="sr-only" for="dm-input">Ditt meddelande</label>
+            <input type="text" id="dm-input" maxlength="400" placeholder="Skriv ett meddelande..." autocomplete="off">
+            <button type="submit" class="icon-btn" aria-label="Skicka" data-icon="send"></button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prata med en volontär -->
+    <section id="panel-volontar" role="tabpanel" aria-labelledby="tab-volontar" hidden>
+      <div class="notice">
+        <p>Volontärerna är vuxna som har gått en utbildning för att lyssna. Kuratorn är utbildad i samtalsstöd. Ingen av dem ställer diagnoser – Link Up är inte vård. Vid akut fara, ring 112.</p>
+      </div>
+      <div class="grid grid-2" id="volunteer-list"></div>
+    </section>
+  </main>
+</body>
+</html>
