@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="sv" data-auth="moderator">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moderator – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/moderator.js" defer></script>
+</head>
+<body data-page="moderator">
+  <main id="main">
+    <div class="page-head">
+      <h1>Moderator</h1>
+      <p>Inlägg som har rapporterats eller innehåller oroande ord. Oroande inlägg ligger alltid först. Inlägg med 3 eller fler rapporter är dolda tills du har tittat på dem.</p>
+    </div>
+
+    <div class="grid grid-4" id="mod-stats"></div>
+
+    <section class="section" aria-labelledby="queue-title">
+      <h2 id="queue-title">Att granska</h2>
+      <div class="stack" id="mod-queue" aria-live="polite"></div>
+    </section>
+
+    <div class="grid grid-2 section">
+      <section class="card" aria-labelledby="suspended-title">
+        <h2 id="suspended-title" class="h3">Avstängda användare</h2>
+        <p class="muted small">En avstängd användare kan inte skapa ett nytt konto, eftersom inloggningen sker med BankID.</p>
+        <ul class="simple-list" id="suspended-list"></ul>
+      </section>
+      <section class="card" aria-labelledby="log-title">
+        <h2 id="log-title" class="h3">Senaste åtgärder</h2>
+        <ul class="simple-list" id="mod-log"></ul>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
