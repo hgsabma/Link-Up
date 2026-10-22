@@ -8,6 +8,16 @@ Ett skolprojekt i kursen Digitalt skapande på Hitachigymnasiet, gjort av Leon, 
 
 > **Allt är påhittat.** BankID-inloggningen, AI-stödet Linky, volontärerna och all data är påhittade. Inget kopplas till riktiga BankID, ingen riktig AI används och ingenting skickas till någon server. All data sparas bara i din egen webbläsare (localStorage).
 
+## Så ser det ut
+
+| Startsidan | Din lilla grupp |
+|---|---|
+| ![Startsidan med mående-check och Din vecka](docs/bilder/startsida-dator.jpg) | ![Grupper med nästa träff och gruppchatt](docs/bilder/grupper-dator.jpg) |
+
+| Linky | Mobil |
+|---|---|
+| ![Linky, AI-stödet](docs/bilder/linky-dator.jpg) | ![Startsidan på mobil med bottenmeny](docs/bilder/startsida-mobil.jpg) |
+
 ## Öppna sidan
 
 ### Lokalt
