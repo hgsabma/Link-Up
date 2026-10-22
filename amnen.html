@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="sv" data-auth="required">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ämnen – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/amnen.js" defer></script>
+</head>
+<body data-page="amnen">
+  <main id="main">
+    <div class="page-head">
+      <h1>Ämnen</h1>
+      <p>Läs vad andra skriver, dela hur du har det eller svara någon. Du syns bara med ditt alias. Du kan också bara läsa – i din egen takt.</p>
+    </div>
+
+    <nav aria-label="Välj ämne">
+      <ul class="chips" id="topic-filter"></ul>
+    </nav>
+
+    <div class="split" style="margin-top:1.5rem">
+      <section aria-labelledby="posts-title">
+        <h2 id="posts-title" class="sr-only">Inlägg</h2>
+        <div id="post-list" class="stack"></div>
+      </section>
+
+      <aside class="stack">
+        <form class="card" id="post-form">
+          <h2 class="h3">Skriv ett inlägg</h2>
+          <div class="field">
+            <label for="post-topic">Ämne</label>
+            <select id="post-topic"></select>
+          </div>
+          <div class="field">
+            <label for="post-body">Vad vill du dela?</label>
+            <textarea id="post-body" maxlength="1000" placeholder="Skriv med egna ord. Dela inga personuppgifter."></textarea>
+          </div>
+          <div class="notice notice-warm" id="post-notice" hidden role="alert"></div>
+          <button type="submit" class="btn btn-primary btn-block">Publicera som <span id="post-alias"></span></button>
+        </form>
+        <div class="card card-soft">
+          <h2 class="h3">Stöd i stället för likes</h2>
+          <p class="muted small">Här finns inga likes eller siffror. Visa att du läst med <strong>Jag hör dig</strong> eller <strong>Du är inte ensam</strong>.</p>
+          <a href="regler.html">Läs reglerna</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Rapportera -->
+  <dialog class="dialog" id="report-dialog" aria-labelledby="report-title">
+    <form method="dialog" id="report-form">
+      <div class="dialog-head"><h2 id="report-title">Rapportera inlägg</h2></div>
+      <p class="muted">En moderator tittar på det. Den du rapporterar får inte veta att det var du.</p>
+      <fieldset>
+        <legend>Varför rapporterar du?</legend>
+        <label class="check"><input type="radio" name="reason" value="Kränkande" checked> Kränkande eller elakt</label>
+        <label class="check"><input type="radio" name="reason" value="Reklam eller spam"> Reklam eller spam</label>
+        <label class="check"><input type="radio" name="reason" value="Delar personuppgifter"> Delar personuppgifter</label>
+        <label class="check"><input type="radio" name="reason" value="Jag är orolig för personen"> Jag är orolig för personen</label>
+      </fieldset>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" id="report-cancel">Avbryt</button>
+        <button type="submit" class="btn btn-primary">Skicka rapport</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
