@@ -497,3 +497,13 @@ legend { font-weight: 700; margin-bottom: .5rem; padding: 0; }
 @media (max-width: 1360px) {
   #logout-btn span, .account a[href="moderator.html"] span { display: none; }
 }
+
+/* Chattens meddelanden får aldrig tryckas ihop, och Linkys förslag rullar i sidled på mobil */
+.messages { min-height: 200px; }
+.linky-chat { height: auto; }
+.linky-chat .messages { height: 380px; flex: none; }
+@media (max-width: 760px) {
+  .linky-chat .messages { height: 320px; }
+  .suggestions { flex-wrap: nowrap; overflow-x: auto; padding-bottom: .5rem; }
+  .suggestions .chip { flex: none; }
+}

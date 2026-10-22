@@ -153,14 +153,28 @@ const LOGO_MARK = '<svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"
 
 // ---------- Ordfilter och oroande ord ----------
 
-// Ord som stoppas innan något publiceras (jämförs med hela ord)
+// Hela ord som stoppas innan något publiceras
 const BLOCKED_WORDS = [
-  'jävla', 'jävlar', 'jävel', 'javla', 'fan', 'faan', 'helvete', 'helvetes', 'skit', 'skitig', 'idiot', 'idioter',
-  'cp', 'mongo', 'hora', 'horunge', 'fitta', 'kuk', 'knulla', 'bitch', 'fuck', 'fucking', 'shit', 'loser',
-  'äckel', 'äcklig', 'tjockis', 'fetto', 'bög', 'blatte', 'neger', 'n-ordet', 'retard', 'pucko', 'dumhuvud'
+  'fan', 'faan', 'faen', 'skit', 'skitig', 'cp', 'mongo', 'mongot', 'hora', 'horan', 'horor', 'kuk', 'kuken', 'kukar',
+  'shit', 'loser', 'losers', 'äckel', 'äcklig', 'tjockis', 'fetto', 'blatte', 'blattar', 'blattarna', 'cunt', 'whore',
+  'slut', 'fag', 'pucko', 'dumhuvud', 'stfu', 'wtf'
+];
+// Ordstammar – stoppar också böjningar och sammansättningar (jävla, jävlar, jävligt, hundjävel)
+const BLOCKED_STEMS = [
+  'jävl', 'javl', 'jävel', 'hundjävel', 'bögjävel', 'helvet', 'idiot', 'efterbliv', 'knull', 'fitt', 'horung',
+  'svartskall', 'fuck', 'motherfuck', 'bitch', 'retard', 'faggot', 'cpung', 'tönt'
+];
+// Grova ord som ofta stavas om – mönstren klarar extra bokstäver (t.ex. "niiigger", "negrer")
+const BLOCKED_PATTERNS = [
+  /^n+[iy]+g{2,}/,
+  /^n+e+g+(e+r+|r+e+r+)(n|na|ns|s|rna|boll\w*)?$/
 ];
 // Fraser som stoppas
-const BLOCKED_PHRASES = ['gå och dö', 'dö bara', 'ingen gillar dig', 'du är värdelös', 'skaffa ett liv'];
+const BLOCKED_PHRASES = [
+  'gå och dö', 'dö bara', 'ingen gillar dig', 'du är värdelös', 'skaffa ett liv', 'döda dig', 'ta livet av dig', 'kill yourself'
+];
+// Siffror och tecken som används i stället för bokstäver (n1gg3r, @ss)
+const LOOKALIKES = { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a', '$': 's', '€': 'e' };
 // Oroande uttryck – visar hjälprutan direkt och lyfts först hos moderatorn
 const CONCERN_PATTERNS = [
   /vill (jag )?inte (leva|finnas)/, /inte leva längre/, /orkar inte (leva|mer|längre)/, /ta (mitt|mitt eget) liv/,
@@ -169,9 +183,26 @@ const CONCERN_PATTERNS = [
 ];
 
 function normalizeText(text) { return ' ' + text.toLowerCase().replace(/[^a-zåäöéü0-9\- ]+/gi, ' ').replace(/\s+/g, ' ') + ' '; }
+// Dela upp text i ord för ordfiltret: små bokstäver, utan skiljetecken och med siffror som bokstäver
+function filterWords(text) {
+  const clean = text.toLowerCase().replace(/[013457@$€]/g, c => LOOKALIKES[c]).replace(/[^a-zåäöéü]+/g, ' ').trim();
+  const words = [];
+  // Bokstäver med mellanrum eller punkter ("f u c k", "n.i.g.g.a") sätts ihop till ett ord
+  clean.split(' ').forEach((w, i, all) => {
+    if (w.length === 1 && i > 0 && all[i - 1].length === 1) words[words.length - 1] += w;
+    else words.push(w);
+  });
+  return words;
+}
+function isBlockedWord(word) {
+  // Testa ordet som det är och med utdragna bokstäver ihoptryckta ("faaan" blir "fan")
+  return [word, word.replace(/(.)\1{2,}/g, '$1')].some(v =>
+    BLOCKED_WORDS.includes(v) || BLOCKED_STEMS.some(s => v.startsWith(s)) || BLOCKED_PATTERNS.some(p => p.test(v)));
+}
 function hasBlockedWords(text) {
-  const norm = normalizeText(text);
-  return BLOCKED_WORDS.some(w => norm.includes(' ' + w + ' ')) || BLOCKED_PHRASES.some(p => norm.includes(' ' + p + ' ') || norm.includes(p));
+  const words = filterWords(text);
+  const joined = ' ' + words.join(' ') + ' ';
+  return words.some(isBlockedWord) || BLOCKED_PHRASES.some(p => joined.includes(' ' + p + ' '));
 }
 function hasConcern(text) {
   const norm = normalizeText(text);
