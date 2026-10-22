@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sv" data-auth="required">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linky – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/linky.js" defer></script>
+</head>
+<body data-page="linky">
+  <main id="main">
+    <div class="page-head">
+      <h1>Linky</h1>
+      <p>Linky hjälper dig att hitta rätt på Link Up – grupper, aktiviteter eller en volontär att prata med.</p>
+    </div>
+
+    <div class="split">
+      <section class="card chat linky-chat" aria-labelledby="linky-chat-title">
+        <div class="chat-head row">
+          <span class="avatar" style="--hue:265" aria-hidden="true">L</span>
+          <div><h2 id="linky-chat-title" class="h3" style="margin:0">Linky</h2><span class="badge badge-warn">AI – inte en människa</span></div>
+        </div>
+        <ul class="messages" id="linky-messages" aria-live="polite"></ul>
+        <div class="suggestions" id="linky-suggestions" aria-label="Förslag på frågor"></div>
+        <div class="notice notice-warm small" id="linky-notice" hidden role="alert"></div>
+        <form class="chat-form" id="linky-form">
+          <label class="sr-only" for="linky-input">Skriv till Linky</label>
+          <input type="text" id="linky-input" maxlength="300" placeholder="Skriv till Linky..." autocomplete="off">
+          <button type="submit" class="icon-btn" aria-label="Skicka" data-icon="send"></button>
+        </form>
+      </section>
+
+      <aside class="card card-soft" aria-labelledby="ai-info-title">
+        <h2 id="ai-info-title" class="h3">Bra att veta om Linky</h2>
+        <ul class="stack" style="padding-left:1.2rem">
+          <li><strong>Linky är en AI</strong>, inte en människa.</li>
+          <li><strong>Linky är inte vård</strong> och ställer inga diagnoser.</li>
+          <li><strong>Linky kan ha fel.</strong> Lita mer på en vuxen du litar på, en volontär eller 1177.</li>
+          <li><strong>Samtalet sparas inte.</strong> När du lämnar sidan försvinner det.</li>
+          <li>I prototypen svarar Linky på nyckelord. Det är ingen riktig AI.</li>
+        </ul>
+        <p>Vill du prata med en människa? <a href="samtal.html?flik=volontar">Prata med en volontär</a>.</p>
+        <p class="muted small">Vid akut fara, ring 112. Självmordslinjen: 90101.</p>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
