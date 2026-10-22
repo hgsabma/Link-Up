@@ -308,6 +308,9 @@ function renderLayout() {
       '<div class="dialog-actions"><a class="btn btn-secondary" href="samtal.html?flik=volontar">Prata med en volontär</a><button type="button" class="btn btn-primary" data-close>Stäng</button></div>' +
     '</dialog>');
 
+  // Ikoner i statisk HTML: <a data-icon="plus">
+  $$('[data-icon]').forEach(el => el.insertAdjacentHTML('afterbegin', icon(el.dataset.icon)));
+
   // Knappar
   $('#help-btn').addEventListener('click', () => openHelp(false));
   $$('#help-dialog [data-close]').forEach(b => b.addEventListener('click', () => $('#help-dialog').close()));
@@ -352,6 +355,56 @@ function renderMessages(listEl, messages, myId) {
       '<p>' + escapeHtml(m.body) + '</p></div></li>';
   }).join('') : '<li class="muted empty">Inga meddelanden än. Säg gärna hej!</li>';
   listEl.scrollTop = listEl.scrollHeight;
+}
+
+// ---------- Aktivitetskort (används på flera sidor) ----------
+
+const ACTIVITY_TYPE_LABEL = { ute: 'Ute', online: 'Online', lasstund: 'Lässtund' };
+
+function activityCardHtml(a, me) {
+  const d = new Date(a.starts_at);
+  const count = countParticipants(a.id);
+  const joined = me && isParticipant(a.id, me.id);
+  const full = count >= a.max_participants;
+  const book = a.book_id ? getBook(a.book_id) : null;
+  let button;
+  if (!me) button = '<a class="btn btn-primary" href="logga-in.html">Logga in för att vara med</a>';
+  else if (joined) button = '<button type="button" class="btn btn-success" data-join-activity="' + a.id + '" aria-pressed="true">' + icon('check') + 'Du är med</button>';
+  else if (full) button = '<button type="button" class="btn btn-ghost" disabled>Fullt</button>';
+  else button = '<button type="button" class="btn btn-primary" data-join-activity="' + a.id + '" aria-pressed="false">Jag vill vara med</button>';
+
+  return '<article class="card activity">' +
+    '<div class="activity-date"><div class="date-box"><span class="day">' + d.getDate() + '</span><span class="mon">' + MONTHS[d.getMonth()] + '</span></div>' +
+      '<div><h3 style="margin:0">' + escapeHtml(a.title) + '</h3><span class="muted small">' + WEEKDAYS[d.getDay()] + ' kl ' + formatTime(d) + '</span></div></div>' +
+    '<div class="row"><span class="badge">' + ACTIVITY_TYPE_LABEL[activityType(a)] + '</span>' +
+      (a.is_safe_first_meet ? '<span class="badge badge-safe" title="Offentlig plats, volontär på plats och du får ta med en kompis">' + icon('shield') + 'Trygg första träff</span>' : '') + '</div>' +
+    '<p class="muted" style="margin:0">' + escapeHtml(a.description) + '</p>' +
+    '<ul class="meta-list">' +
+      '<li>' + icon('pin') + escapeHtml(a.location) + '</li>' +
+      (book ? '<li>' + icon('book') + escapeHtml(book.title) + ' – ' + escapeHtml(book.author) + '</li>' : '') +
+      '<li>' + icon('users') + count + ' av ' + a.max_participants + ' deltagare</li>' +
+    '</ul>' +
+    '<div class="progress" aria-hidden="true"><span style="width:' + Math.min(100, Math.round(count / a.max_participants * 100)) + '%"></span></div>' +
+    button +
+  '</article>';
+}
+
+// Koppla "Jag vill vara med"-knapparna. rerender ritar om listan.
+function bindActivityButtons(root, me, rerender) {
+  $$('[data-join-activity]', root).forEach(b => b.addEventListener('click', () => {
+    const id = Number(b.dataset.joinActivity);
+    if (isParticipant(id, me.id)) {
+      deleteRows('activity_participants', p => p.activity_id === id && p.user_id === me.id);
+      toast('Du är avanmäld från ' + getActivity(id).title + '.');
+    } else {
+      if (isActivityFull(id)) return toast('Tyvärr, aktiviteten är full.');
+      insertRow('activity_participants', { activity_id: id, user_id: me.id, joined_at: nowIso() }, false);
+      toast('Kul! Du är anmäld till ' + getActivity(id).title + '.');
+    }
+    rerender();
+    const again = $('[data-join-activity="' + id + '"]', root);
+    if (again) again.focus();
+  }));
 }
 
 // ---------- Start ----------
