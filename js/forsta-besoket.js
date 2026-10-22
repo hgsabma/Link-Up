@@ -74,5 +74,5 @@ function next() {
   chosen.forEach(id => insertRow('user_interests', { user_id: user.id, interest_id: id }, false));
   try { localStorage.removeItem(PENDING_KEY); } catch (e) { /* ignorera */ }
   login(user.id);
-  location.href = pending.next && pending.next !== 'logga-in.html' ? pending.next : 'grupper.html?ny=1';
+  location.href = pending.next && !['logga-in.html', 'index.html'].includes(pending.next) ? pending.next : 'grupper.html?ny=1';
 }

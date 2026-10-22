@@ -162,9 +162,10 @@ const BLOCKED_WORDS = [
 // Fraser som stoppas
 const BLOCKED_PHRASES = ['gå och dö', 'dö bara', 'ingen gillar dig', 'du är värdelös', 'skaffa ett liv'];
 // Oroande uttryck – visar hjälprutan direkt och lyfts först hos moderatorn
-const CONCERN_PHRASES = [
-  'vill inte leva', 'ta mitt liv', 'ta livet av mig', 'vill dö', 'orkar inte leva', 'självmord',
-  'skada mig själv', 'skadar mig själv', 'vill försvinna', 'inte vara kvar', 'avsluta allt'
+const CONCERN_PATTERNS = [
+  /vill (jag )?inte (leva|finnas)/, /inte leva längre/, /orkar inte (leva|mer|längre)/, /ta (mitt|mitt eget) liv/,
+  /ta livet av mig/, /vill (bara )?dö/, /självmord/, /skada(r)? mig själv/, /vill (bara )?försvinna/,
+  /inte vara kvar/, /avsluta allt/, /döda mig/
 ];
 
 function normalizeText(text) { return ' ' + text.toLowerCase().replace(/[^a-zåäöéü0-9\- ]+/gi, ' ').replace(/\s+/g, ' ') + ' '; }
@@ -174,7 +175,7 @@ function hasBlockedWords(text) {
 }
 function hasConcern(text) {
   const norm = normalizeText(text);
-  return CONCERN_PHRASES.some(p => norm.includes(p));
+  return CONCERN_PATTERNS.some(p => p.test(norm));
 }
 
 // Kontrollera text innan publicering. Visar påminnelse/hjälpruta och returnerar true om texten får publiceras.
@@ -244,8 +245,8 @@ function renderLayout() {
 
   const accountHtml = user
     ? '<a class="btn btn-ghost btn-sm" href="min-sida.html">' + avatar(user.id, 'sm') + '<span>' + escapeHtml(user.alias) + '</span></a>' +
-      (user.role === 'moderator' ? '<a class="btn btn-ghost btn-sm" href="moderator.html">' + icon('shield') + '<span>Moderator</span></a>' : '') +
-      '<button type="button" class="btn btn-ghost btn-sm" id="logout-btn">' + icon('logout') + '<span>Logga ut</span></button>'
+      (user.role === 'moderator' ? '<a class="btn btn-ghost btn-sm" href="moderator.html" aria-label="Moderator">' + icon('shield') + '<span>Moderator</span></a>' : '') +
+      '<button type="button" class="btn btn-ghost btn-sm" id="logout-btn" aria-label="Logga ut">' + icon('logout') + '<span>Logga ut</span></button>'
     : '<a class="btn btn-ghost btn-sm" href="logga-in.html">Logga in</a>' +
       '<a class="btn btn-primary btn-sm" href="logga-in.html?nytt=1">Skapa konto med BankID</a>';
 

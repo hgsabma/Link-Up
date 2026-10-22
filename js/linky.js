@@ -19,7 +19,7 @@ function activitySuggestion(filterFn) {
 function volunteerSuggestion() {
   const v = db.users.filter(u => u.role === 'volunteer' || u.role === 'counselor');
   const free = v.find(u => isAvailableNow(u.id));
-  return free ? link('samtal.html?flik=volontar', free.alias) + ' är ledig just nu' : link('samtal.html?flik=volontar', 'en volontär') + ' (ingen är ledig just nu, men du kan skicka en förfrågan)';
+  return free ? link('samtal.html?flik=volontar', free.alias) + ' (ledig just nu)' : link('samtal.html?flik=volontar', 'en volontär') + ' (ingen är ledig just nu, men du kan skicka en förfrågan)';
 }
 
 // Regler: första regeln vars nyckelord finns i texten vinner
@@ -33,7 +33,7 @@ const RULES = [
   { keys: ['sova', 'sover', 'sömn', 'somna', 'trött'],
     reply: () => 'Sömn kan vara svårt när tankarna snurrar. Andra har tipsat om att skriva ner tankar innan man lägger sig och att lägga undan mobilen en stund innan. Läs mer i ämnet ' + link('amnen.html?amne=5', 'Sömn') + '. Om det håller i sig länge kan du ringa ' + link('tel:1177', '1177') + ' för råd.' },
   { keys: ['prata', 'volontär', 'kurator', 'människa', 'någon att'],
-    reply: () => 'Det är modigt att vilja prata. Just nu: ' + volunteerSuggestion() + '. Du kan också skriva enskilt med någon i din grupp under ' + link('samtal.html', 'Mina samtal') + '.' },
+    reply: () => 'Det är modigt att vilja prata. Du kan prata med ' + volunteerSuggestion() + '. Du kan också skriva enskilt med någon i din grupp under ' + link('samtal.html', 'Mina samtal') + '.' },
   { keys: ['ledsen', 'dåligt', 'ångest', 'orolig', 'panik', 'gråter', 'jobbigt', 'tungt'],
     reply: () => 'Tack för att du berättar. Det är okej att inte må bra. Du kan prata med ' + volunteerSuggestion() + ', eller gå med i en lugn grupp: ' + groupSuggestion(g => g.interest_id === 12) + '. Om det känns akut, ring ' + link('tel:90101', 'Självmordslinjen 90101') + ' eller ' + link('tel:112', '112') + '.' },
   { keys: ['bok', 'läsa', 'läser', 'lässtund'],

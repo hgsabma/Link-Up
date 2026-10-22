@@ -50,7 +50,7 @@ function conversationPeople() {
     if (m.sender_id === me.id) ids.add(m.receiver_id);
     if (m.receiver_id === me.id) ids.add(m.sender_id);
   });
-  return [...ids].filter(id => !isBlocked(me.id, id) && getUser(id));
+  return [...ids].filter(id => getUser(id) && !isBlocked(me.id, id) && !isSuspended(id));
 }
 
 function renderConversations() {
