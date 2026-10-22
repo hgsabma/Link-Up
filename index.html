@@ -4,20 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Link Up – Du är inte ensam</title>
+  <meta name="description" content="Link Up är en trygg digital mötesplats för unga från 15 år. Du är inte ensam.">
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/index.js" defer></script>
 </head>
 <body data-page="hem">
   <main id="main">
-    <section class="hero">
+    <section class="hero" aria-labelledby="hero-title">
       <div>
-        <h1>Du är inte <span>ensam.</span></h1>
-        <p class="lead">En trygg mötesplats för unga från 15 år.</p>
-        <a class="btn btn-primary" href="logga-in.html">Logga in</a>
+        <p class="badge badge-accent" id="hello">En trygg mötesplats för unga från 15 år</p>
+        <h1 id="hero-title">Du är inte <span>ensam.</span></h1>
+        <p class="lead">Prata om hur du mår, hitta en liten grupp som ses varje vecka och gör saker tillsammans – online och på riktigt. Du kan också börja med att bara läsa.</p>
+        <div class="row" id="hero-actions"></div>
+      </div>
+
+      <!-- Mående-check -->
+      <section class="card mood-card" aria-labelledby="mood-title">
+        <h2 id="mood-title">Hur mår du idag?</h2>
+        <p class="muted small">Bara du ser svaret. Det hjälper oss att föreslå något som passar dig.</p>
+        <div class="mood-buttons" role="group" aria-labelledby="mood-title" id="mood-buttons"></div>
+        <div class="mood-result" id="mood-result" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <!-- Tre stora kort -->
+    <section class="section" aria-labelledby="start-title">
+      <h2 id="start-title">Var vill du börja?</h2>
+      <div class="grid grid-3">
+        <a class="card card-link big-card" href="samtal.html">
+          <span class="icon-wrap" data-icon="chat"></span>
+          <h3>Jag vill prata</h3>
+          <p class="muted">Skriv i ett ämne, chatta med någon i din grupp eller prata med en volontär.</p>
+          <span class="go">Börja prata <span data-icon="arrow"></span></span>
+        </a>
+        <a class="card card-link big-card" href="grupper.html">
+          <span class="icon-wrap" data-icon="users"></span>
+          <h3>Jag vill hitta människor</h3>
+          <p class="muted">Gå med i en liten grupp på 5–8 personer som ses varje vecka.</p>
+          <span class="go">Hitta en grupp <span data-icon="arrow"></span></span>
+        </a>
+        <a class="card card-link big-card" href="aktiviteter.html">
+          <span class="icon-wrap" data-icon="calendar"></span>
+          <h3>Jag vill göra något</h3>
+          <p class="muted">Promenader, plugg, spelkvällar och lässtunder. Testa en Trygg första träff.</p>
+          <span class="go">Se aktiviteter <span data-icon="arrow"></span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Populära ämnen -->
+    <section class="section" aria-labelledby="topics-title">
+      <div class="section-head">
+        <h2 id="topics-title">Populära ämnen</h2>
+        <a href="amnen.html">Alla ämnen</a>
+      </div>
+      <ul class="chips" id="popular-topics"></ul>
+    </section>
+
+    <!-- Kommande aktiviteter -->
+    <section class="section" aria-labelledby="activities-title">
+      <div class="section-head">
+        <h2 id="activities-title">Kommande aktiviteter</h2>
+        <a href="aktiviteter.html">Alla aktiviteter</a>
+      </div>
+      <div class="grid grid-3" id="upcoming"></div>
+    </section>
+
+    <div class="grid grid-2 section">
+      <!-- Veckans lässtund -->
+      <section class="card" aria-labelledby="reading-title" id="weekly-reading"></section>
+
+      <!-- Hjälprutan -->
+      <section class="card card-soft" aria-labelledby="help-box-title">
+        <h2 id="help-box-title">Behöver du hjälp nu?</h2>
+        <p class="muted">Link Up är inte vård. Om du mår väldigt dåligt finns det alltid någon att ringa.</p>
+        <div id="help-box"></div>
+      </section>
+    </div>
+
+    <!-- Linky -->
+    <section class="section card card-accent ai-banner" aria-labelledby="linky-title">
+      <span data-icon="sparkle"></span>
+      <div>
+        <h2 id="linky-title" class="h3">Vet du inte var du ska börja? Fråga Linky</h2>
+        <p class="muted">Linky är en AI, inte en människa och inte vård. Linky kan tipsa om grupper, aktiviteter och volontärer.</p>
+        <a class="btn btn-secondary" href="linky.html">Prata med Linky</a>
       </div>
     </section>
   </main>
