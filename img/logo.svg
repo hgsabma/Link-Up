@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 48" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">Link Up</title>
+  <!-- Lila rundad ruta -->
+  <rect x="0" y="0" width="48" height="48" rx="13" fill="#7c3aed"/>
+  <!-- Två pratbubblor som hakar i varandra som länkar -->
+  <g fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 13h14a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-7l-5 4v-4h-2a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z"/>
+    <path d="M24 20h14a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-2v4l-5-4h-7a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z"/>
+  </g>
+  <!-- Text -->
+  <text x="60" y="32" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" fill="#ffffff">Link Up</text>
+</svg>

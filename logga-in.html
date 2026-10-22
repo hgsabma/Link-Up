@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logga in – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logga-in.js" defer></script>
+</head>
+<body data-page="logga-in">
+  <main id="main">
+    <div class="auth-wrap">
+      <div class="page-head">
+        <h1 id="login-title">Logga in</h1>
+        <p>Alla på Link Up loggar in med BankID och är minst 15 år. Andra ser bara ditt alias, aldrig ditt namn.</p>
+      </div>
+
+      <!-- Steg 1: välj testperson och starta BankID -->
+      <section class="card" id="step-choose" aria-labelledby="choose-title">
+        <h2 id="choose-title" class="h3">Logga in med BankID</h2>
+        <p class="notice small"><strong>Det här är en prototyp.</strong> Inloggningen är påhittad och kopplas inte till riktiga BankID. Välj en testperson nedan.</p>
+        <form id="bankid-form">
+          <fieldset>
+            <legend>Vem vill du logga in som?</legend>
+            <div class="test-users" id="test-users"></div>
+          </fieldset>
+          <button type="submit" class="btn btn-primary btn-block">Logga in med BankID</button>
+        </form>
+      </section>
+
+      <!-- Steg 2: väntar på BankID-appen -->
+      <section class="card bankid-box" id="step-wait" hidden aria-live="polite">
+        <div class="bankid-logo" aria-hidden="true">BankID</div>
+        <h2>Öppna BankID-appen</h2>
+        <p class="muted">Starta BankID-appen på din telefon och legitimera dig.</p>
+        <div class="spinner" role="img" aria-label="Väntar på BankID"></div>
+        <button type="button" class="btn btn-ghost" id="cancel-btn">Avbryt</button>
+      </section>
+
+      <!-- Steg 3: meddelande (t.ex. under 15 år eller avstängd) -->
+      <section class="card" id="step-message" hidden aria-live="polite"></section>
+    </div>
+  </main>
+</body>
+</html>
