@@ -1,6 +1,6 @@
 # Databas – Link Up
 
-All data i prototypen är påhittad. Den ligger i `js/data.js` som **normaliserade tabeller** (en array per tabell) och sparas i webbläsarens `localStorage` under nyckeln `linkup_db_v1`. Knappen **Återställ exempeldata** på Min sida laddar om exempeldatan.
+All data i prototypen är påhittad. Den ligger i `js/data.js` som **normaliserade tabeller** (en array per tabell) och sparas i webbläsarens `localStorage` under nyckeln `linkup_db_v2`. Knappen **Återställ exempeldata** på Min sida laddar om exempeldatan.
 
 ## Regler vi följer
 
@@ -62,6 +62,8 @@ erDiagram
         string description
         int interest_id FK
         int max_members
+        int min_age
+        int max_age
         datetime created_at
     }
     group_members {
@@ -75,6 +77,7 @@ erDiagram
         int user_id FK
         string body
         datetime created_at
+        datetime removed_at
     }
     group_attendance {
         int group_id PK, FK
@@ -88,6 +91,7 @@ erDiagram
         string body
         datetime created_at
         datetime read_at
+        datetime removed_at
     }
     books {
         int id PK
@@ -116,11 +120,14 @@ erDiagram
         int user_id FK
         int mood
         datetime created_at
+        int activity_id FK
     }
     reports {
         int id PK
         int reporter_id FK, UK
         int post_id FK, UK
+        int group_message_id FK, UK
+        int direct_message_id FK, UK
         string reason
         datetime created_at
     }
@@ -135,6 +142,8 @@ erDiagram
         int user_id FK
         string action
         int post_id FK
+        int group_message_id FK
+        int direct_message_id FK
         string reason
         datetime created_at
     }
@@ -168,12 +177,17 @@ erDiagram
     users ||--o{ activity_participants : "deltar i"
     users ||--o{ mood_checks : "gör"
     users ||--o{ reports : "rapporterar"
-    posts ||--o{ reports : "rapporteras i"
+    posts |o--o{ reports : "rapporteras i"
+    group_messages |o--o{ reports : "rapporteras i"
+    direct_messages |o--o{ reports : "rapporteras i"
     users ||--o{ blocks : "blockerar"
     users ||--o{ blocks : "blockeras"
     users ||--o{ moderation_actions : "modererar"
     users ||--o{ moderation_actions : "gäller"
     posts |o--o{ moderation_actions : "gäller"
+    group_messages |o--o{ moderation_actions : "gäller"
+    direct_messages |o--o{ moderation_actions : "gäller"
+    activities |o--o{ mood_checks : "betygsätts i"
     users ||--o{ volunteer_hours : "är ledig"
 ```
 
@@ -248,6 +262,8 @@ PK = (user_id, post_id, type). Antal reaktioner visas aldrig och sparas inte.
 | description | text | |
 | interest_id | FK → interests | |
 | max_members | heltal | Grupper med max 8 räknas som "små grupper" |
+| min_age | heltal | Lägsta ålder, t.ex. 15 |
+| max_age | heltal eller null | Högsta ålder (null = ingen övre gräns). Håller isär unga 15–17 och vuxna 18+ |
 | created_at | tidpunkt | Veckodag och klockslag för veckoträffen räknas fram härifrån |
 
 ### group_members (koppling users ↔ groups)
@@ -267,6 +283,9 @@ PK = (group_id, user_id)
 | user_id | FK → users |
 | body | text |
 | created_at | tidpunkt |
+| removed_at | tidpunkt eller null |
+
+Ett meddelande med `removed_at` har tagits bort av en moderator.
 
 ### group_attendance (koppling users ↔ veckoträff) – *tillägg*
 | Fält | Typ | Beskrivning |
@@ -286,6 +305,7 @@ PK = (group_id, user_id, meeting_date). Behövs för knappen **Jag kommer**.
 | body | text | |
 | created_at | tidpunkt | |
 | read_at | tidpunkt eller null | null = oläst |
+| removed_at | tidpunkt eller null | Sätts när en moderator tar bort meddelandet |
 
 ### books
 | Fält | Typ |
@@ -324,17 +344,20 @@ PK = (activity_id, user_id)
 | user_id | FK → users | |
 | mood | heltal 1–5 | 1 Dåligt, 2 Sådär, 3 Okej, 4 Bra, 5 Toppen |
 | created_at | tidpunkt | |
+| activity_id | FK → activities eller null | Satt när checken är svaret på "Hur var det?" efter en aktivitet |
 
 ### reports
 | Fält | Typ | Beskrivning |
 |---|---|---|
 | id | heltal, PK | |
 | reporter_id | FK → users | |
-| post_id | FK → posts | |
+| post_id | FK → posts eller null | |
+| group_message_id | FK → group_messages eller null | |
+| direct_message_id | FK → direct_messages eller null | |
 | reason | text | |
 | created_at | tidpunkt | |
 
-(reporter_id, post_id) är unika tillsammans – man kan bara rapportera ett inlägg en gång.
+En rapport gäller exakt ett av `post_id`, `group_message_id` och `direct_message_id`. (reporter_id, post_id) är unika tillsammans, och likadant för meddelandena – man kan bara rapportera samma sak en gång.
 
 ### blocks (koppling users ↔ users)
 | Fält | Typ |
@@ -353,6 +376,8 @@ PK = (blocker_id, blocked_id)
 | user_id | FK → users | Den som åtgärden gäller |
 | action | text | `remove`, `warn`, `suspend` eller `dismiss` (Inget fel) |
 | post_id | FK → posts eller null | |
+| group_message_id | FK → group_messages eller null | |
+| direct_message_id | FK → direct_messages eller null | |
 | reason | text | |
 | created_at | tidpunkt | |
 
@@ -373,6 +398,14 @@ Två tabeller har lagts till för att funktionerna ska gå att bygga utan att sp
 - `group_attendance` – vem som sagt "Jag kommer" till en veckoträff.
 - `volunteer_hours` – när volontärer och kurator brukar vara lediga.
 
+Och några kolumner:
+
+- `groups.min_age` och `groups.max_age` – åldersgrupp för gruppen.
+- `group_messages.removed_at` och `direct_messages.removed_at` – moderatorer kan ta bort chattmeddelanden.
+- `reports.group_message_id` och `reports.direct_message_id` – man kan rapportera chattmeddelanden.
+- `moderation_actions.group_message_id` och `moderation_actions.direct_message_id` – åtgärder på chattmeddelanden.
+- `mood_checks.activity_id` – svaret på "Hur var det?" efter en aktivitet.
+
 ## Sådant som räknas fram (sparas inte)
 
 | Vad | Hjälpfunktion |
@@ -392,14 +425,20 @@ Två tabeller har lagts till för att funktionerna ska gå att bygga utan att sp
 | Veckans lässtund | `nextReading()` |
 | Olästa meddelanden | `countUnread(receiverId, senderId)` |
 | Ledig nu / nästa lediga tid | `isAvailableNow(userId)` / `nextAvailable(userId)` |
-| Oroande inlägg | `hasConcern(text)` i `js/app.js` |
+| Oroande inlägg och meddelanden | `hasConcern(text)` i `js/app.js` |
+| Om ett chattmeddelande är dolt | `isMessageHidden(field, id)` |
+| Åldersgrupp och vem man får skriva enskilt med | `isUnder18(userId)`, `canMessage(fromId, toId)` |
+| Om en grupp passar ens ålder | `fitsAgeRange(group, userId)` |
+| Gruppförslag efter första besöket | `suggestGroup(userId)` |
+| Påminnelser (idag eller imorgon) | `getReminders(userId)` |
+| Aktiviteter att svara "Hur var det?" om | `activitiesToRate(userId)` |
 
 ## Relationer i korthet
 
 ```
 users ─< posts ─< replies
 users ─< support_reactions >─ posts
-users ─< reports >─ posts
+users ─< reports >─ posts / group_messages / direct_messages
 users ─< user_interests >─ interests
 interests ─< groups ─< group_members >─ users
 groups ─< group_messages, groups ─< group_attendance
