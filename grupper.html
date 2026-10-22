@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sv" data-auth="required">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grupper – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/grupper.js" defer></script>
+</head>
+<body data-page="grupper">
+  <main id="main">
+    <div class="page-head">
+      <h1>Grupper</h1>
+      <p>I en liten grupp på 5–8 personer ses ni varje vecka. Samma människor, gång på gång – så att gemenskapen håller.</p>
+    </div>
+
+    <div id="welcome" hidden></div>
+
+    <!-- Din grupp -->
+    <section aria-labelledby="my-group-title" id="my-group-section"></section>
+
+    <!-- Andra grupper -->
+    <section class="section" aria-labelledby="other-title">
+      <div class="section-head">
+        <h2 id="other-title">Hitta fler grupper</h2>
+      </div>
+      <div class="form-grid card card-soft" style="margin-bottom:1.25rem">
+        <div class="field">
+          <label for="group-search">Sök grupp</label>
+          <input type="search" id="group-search" placeholder="T.ex. promenad, spel, plugg">
+        </div>
+        <div class="field">
+          <label for="group-interest">Intresse</label>
+          <select id="group-interest"><option value="">Alla intressen</option></select>
+        </div>
+      </div>
+      <div class="grid grid-3" id="group-list" aria-live="polite"></div>
+    </section>
+  </main>
+</body>
+</html>
