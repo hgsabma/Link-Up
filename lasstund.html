@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sv" data-auth="required">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lässtund – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/lasstund.js" defer></script>
+</head>
+<body data-page="lasstund">
+  <main id="main">
+    <div class="page-head">
+      <h1>Lässtund</h1>
+      <p>Varje vecka läser en volontär högt ur en bok. Lyssna, läs med i din egen takt eller chatta med de andra. Du behöver inte säga något.</p>
+    </div>
+
+    <div class="split">
+      <div class="stack">
+        <section class="card" aria-labelledby="book-title">
+          <div class="row" style="align-items:flex-start;flex-wrap:nowrap">
+            <div class="book-cover" id="book-cover" aria-hidden="true"></div>
+            <div>
+              <span class="badge badge-accent">Veckans bok</span>
+              <h2 id="book-title" style="margin-top:.5rem"></h2>
+              <p class="muted" id="book-author"></p>
+              <div class="row" id="reader"></div>
+            </div>
+          </div>
+
+          <!-- Simulerad uppläsning -->
+          <div class="player" id="player">
+            <button type="button" class="play-btn" id="play-btn" aria-pressed="false"><span id="play-icon"></span><span class="sr-only" id="play-label">Spela upp</span></button>
+            <div style="flex:1;min-width:160px">
+              <div class="row row-between small muted"><span id="play-status">Pausad</span><span id="play-time">0:00 / 0:00</span></div>
+              <div class="progress" role="progressbar" aria-label="Hur långt uppläsningen har kommit" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="play-progress"><span style="width:0%"></span></div>
+            </div>
+          </div>
+          <p class="muted small">Uppläsningen är simulerad i prototypen – det hörs inget ljud, men texten markeras i takt med läsningen.</p>
+
+          <div class="row">
+            <button type="button" class="btn btn-secondary" id="self-btn" aria-pressed="false" data-icon="book">Läs själv i takt</button>
+            <button type="button" class="btn btn-ghost" id="readaloud-btn" data-icon="hand">Jag vill läsa högt</button>
+          </div>
+          <div id="readaloud-notice" class="notice notice-success" hidden style="margin-top:1rem" role="status"></div>
+        </section>
+
+        <section class="card" aria-labelledby="text-title">
+          <div class="row row-between">
+            <h2 id="text-title" class="h3" style="margin:0">Kapitel 3: Stormen</h2>
+            <div class="row" id="self-controls" hidden>
+              <button type="button" class="btn btn-sm btn-ghost" id="prev-btn">Föregående stycke</button>
+              <button type="button" class="btn btn-sm btn-primary" id="next-btn">Nästa stycke</button>
+            </div>
+          </div>
+          <div class="reading-text" id="reading-text" aria-live="off"></div>
+        </section>
+
+        <section aria-labelledby="more-title">
+          <h2 id="more-title" class="h3">Kommande lässtunder</h2>
+          <div class="grid grid-2" id="reading-list"></div>
+        </section>
+      </div>
+
+      <!-- Chatt bredvid -->
+      <section class="card chat" aria-labelledby="chat-title" id="reading-chat">
+        <div class="chat-head"><h2 id="chat-title" class="h3">Chatt under lässtunden</h2><span class="muted small" id="chat-sub"></span></div>
+        <ul class="messages" id="reading-messages" aria-live="polite"></ul>
+        <div class="notice notice-warm small" id="chat-notice" hidden role="alert"></div>
+        <form class="chat-form" id="chat-form">
+          <label class="sr-only" for="chat-input">Skriv i chatten</label>
+          <input type="text" id="chat-input" maxlength="300" placeholder="Skriv något..." autocomplete="off">
+          <button type="submit" class="icon-btn" aria-label="Skicka" data-icon="send"></button>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
