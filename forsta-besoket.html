@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Första besöket – Link Up</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/forsta-besoket.js" defer></script>
+</head>
+<body data-page="forsta-besoket">
+  <main id="main">
+    <div class="auth-wrap">
+      <div class="page-head">
+        <h1>Välkommen till Link Up</h1>
+        <p>Tre snabba steg, sedan är du igång. Du kan ändra allt senare på Min sida.</p>
+      </div>
+      <ol class="steps" aria-label="Steg">
+        <li class="done"><span class="sr-only">Steg 1</span></li>
+        <li><span class="sr-only">Steg 2</span></li>
+        <li><span class="sr-only">Steg 3</span></li>
+      </ol>
+
+      <form class="card" id="welcome-form" novalidate>
+        <!-- Steg 1: alias -->
+        <section data-step="1" aria-labelledby="s1">
+          <h2 id="s1">1. Välj ett alias</h2>
+          <p class="muted">Det är bara ditt alias som andra ser. Använd inte ditt riktiga namn.</p>
+          <div class="field">
+            <label for="alias">Alias</label>
+            <input type="text" id="alias" maxlength="20" autocomplete="off" aria-describedby="alias-hint">
+            <p class="field-hint" id="alias-hint">3–20 tecken. Bokstäver, siffror och mellanslag.</p>
+          </div>
+          <div class="chips" id="alias-ideas" aria-label="Förslag på alias"></div>
+        </section>
+
+        <!-- Steg 2: intressen -->
+        <section data-step="2" hidden aria-labelledby="s2">
+          <h2 id="s2">2. Vad gillar du?</h2>
+          <p class="muted">Välj minst tre intressen så kan vi föreslå grupper och aktiviteter som passar dig.</p>
+          <div class="chips" id="interest-list"></div>
+          <p class="field-hint" id="interest-count" aria-live="polite"></p>
+        </section>
+
+        <!-- Steg 3: regler -->
+        <section data-step="3" hidden aria-labelledby="s3">
+          <h2 id="s3">3. Så här är vi mot varandra</h2>
+          <ul>
+            <li>Var snäll och respektfull, även när du inte håller med.</li>
+            <li>Dela aldrig ditt namn, adress, telefonnummer eller skola – varken ditt eget eller någon annans.</li>
+            <li>Inga kränkningar, hot, svordomar eller reklam.</li>
+            <li>Det som sägs i gruppen stannar i gruppen.</li>
+            <li>Link Up är inte vård. Om du eller någon annan är i fara, ring 112.</li>
+          </ul>
+          <p><a href="regler.html" target="_blank" rel="noopener">Läs alla regler (öppnas i ny flik)</a></p>
+          <label class="check"><input type="checkbox" id="accept"> Jag har läst och godkänner reglerna</label>
+        </section>
+
+        <div class="notice notice-warm" id="welcome-notice" hidden role="alert"></div>
+        <div class="row row-between">
+          <button type="button" class="btn btn-ghost" id="back-btn" hidden>Tillbaka</button>
+          <button type="submit" class="btn btn-primary" id="next-btn">Nästa</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
