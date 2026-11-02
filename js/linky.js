@@ -85,6 +85,25 @@ function brisSentence() {
   return isUnder18(me.id) ? ' Du kan också ringa Bris på ' + link('tel:116111', '116 111') + ' – det är gratis och du behöver inte säga vem du är.' : '';
 }
 
+// Starkare i kroppen: enkla tips och en aktivitet där man rör på sig (inga medicinska råd)
+function bodyReply() {
+  const r = activityReply(a => activityType(a) === 'ute' || /yoga|promenad/i.test(a.title));
+  r.html = 'Bra att du vill röra på dig – det är bra för både kroppen och humöret! Börja i lugn takt: lite rörelse varje dag, till exempel en promenad, ' +
+    'och öka sakta. Sov ordentligt och ät regelbundet, det är då kroppen bygger styrka. Om du har ont eller är osäker, fråga skolsköterskan. ' +
+    'Det är roligare tillsammans: ' + r.html;
+  return r;
+}
+// Starkare inuti: saker som hjälper många att må bättre över tid
+function mentalStrengthReply() {
+  const g = findGroup(x => isSmallGroup(x) && likesInterest(x)) || findGroup(isSmallGroup);
+  return {
+    html: 'Det är ett fint mål. Saker som hjälper många att orka mer inuti: sov regelbundet, rör på dig, träffa människor du mår bra av och sätt ord på hur du känner – skriv ner det eller prata med någon. ' +
+      'Sätt små mål och var snäll mot dig själv när det går trögt. ' + (g ? 'Att ha en grupp som ses varje vecka hjälper också: ' + groupSentence(g) + ' ' : '') +
+      'Fler tips finns i ' + link('amnen.html?amne=7', 'Att må bättre') + '.',
+    actions: g ? [joinGroupAction(g)] : [], quick: ['Jag vill prata med en människa', 'Tips på något att göra']
+  };
+}
+
 function concernReply() {
   return {
     html: 'Det du skriver är viktigt, och jag blir orolig för dig. Jag är bara en AI, så du behöver prata med en människa nu. Ring ' +
@@ -187,6 +206,32 @@ const INTENTS = [
       html: 'Det låter som att du är väldigt hård mot dig själv. Du är mer än det du presterar och hur du ser ut. Ett litet tips: skriv ner tre saker du gjort bra idag, hur små de än är. ' +
         'Och prata gärna med någon om det. ' + volunteerSentence(),
       actions: [volunteerAction()], quick: ['Jag känner mig ensam']
+    }) },
+  // "Starkare" kan betyda i kroppen eller inuti – Linky frågar om det inte framgår
+  { keys: ['starkare', 'bli stark', 'stark'],
+    reply: ctx => /psykiskt|mentalt|inuti|själ/.test(ctx.text) ? mentalStrengthReply()
+      : /träna|kropp|muskl|gym|fysiskt/.test(ctx.text) ? bodyReply()
+      : { html: 'Bra mål! Menar du starkare i kroppen eller starkare inuti, alltså psykiskt?', quick: ['I kroppen', 'Psykiskt'] } },
+  { keys: ['träna', 'träning', 'gym', 'muskler', 'springa', 'löpning', 'kondition', 'yoga', 'i kroppen', 'motion', 'sport', 'fotboll', 'fysiskt'],
+    reply: () => bodyReply() },
+  { keys: ['psykiskt', 'mentalt', 'inuti', 'tåla mer', 'hantera', 'klara av', 'må bättre', 'motståndskraft'],
+    reply: () => mentalStrengthReply() },
+  { keys: ['motivation', 'motiverad', 'lat', 'orkar ingenting', 'prokrastinerar', 'skjuter upp', 'kommer inte igång'],
+    reply: () => ({
+      html: 'Alla tappar motivationen ibland, det betyder inte att du är lat. Börja så smått att det nästan känns löjligt – till exempel fem minuter – och belöna dig efteråt. ' +
+        'Det är också lättare tillsammans med andra, så kolla gärna ' + link('grupper.html', 'Grupper') + ' eller ' + link('aktiviteter.html', 'Aktiviteter') + '.',
+      quick: ['Jag är stressad över skolan', 'Tips på något att göra']
+    }) },
+  { keys: ['mobilen', 'skärm', 'skärmtid', 'scrollar', 'tiktok', 'instagram', 'sociala medier', 'jämför mig'],
+    reply: () => ({
+      html: 'Det är lätt att fastna i mobilen, och att jämföra sig med andra på sociala medier kan göra att man mår sämre. Kom ihåg att folk mest visar sina bästa stunder. ' +
+        'Testa att stänga av aviseringar en stund om dagen, eller träffa folk på riktigt – det är det Link Up finns till för.',
+      quick: ['Tips på något att göra']
+    }) },
+  { keys: ['framtid', 'framtiden', 'vad ska jag bli', 'gymnasieval', 'sommarjobb', 'jobb'],
+    reply: () => ({
+      html: 'Det är helt normalt att inte veta vad man vill göra än. Många byter riktning flera gånger. Prata gärna med en studie- och yrkesvägledare på skolan – de är bra på just det. ' +
+        'Du kan också fråga andra i ' + link('amnen.html?amne=8', 'Bara snack') + ' hur de har tänkt.'
     }) },
   { keys: ['arg', 'ilska', 'irriterad', 'förbannad', 'sur'],
     reply: () => {
