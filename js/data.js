@@ -249,6 +249,7 @@ function loadDb() {
     if (raw) {
       const data = JSON.parse(raw);
       TABLES.forEach(t => { if (!Array.isArray(data[t])) data[t] = []; });
+      moveDatesForward(data);
       return data;
     }
   } catch (e) { /* localStorage kan vara blockerat – då används exempeldatan */ }
@@ -256,7 +257,37 @@ function loadDb() {
   // Fyll i datum för de "Jag kommer" som finns i exempeldatan
   fresh.group_attendance.forEach(a => { a.meeting_date = dateKey(nextMeetingFrom(fresh.groups.find(g => g.id === a.group_id))); });
   saveDb(fresh);
+  try { localStorage.setItem(DATE_KEY, dateKey(new Date())); } catch (e) { /* ignorera */ }
   return fresh;
+}
+
+// Exempeldatan följer med i tiden: alla tider flyttas fram lika många dagar som gått sedan sidan
+// senast öppnades, så att aktiviteter och träffar inte "redan har varit" när man visar sidan senare.
+const DATE_KEY = 'linkup_data_day';
+const DATE_FIELDS = ['created_at', 'starts_at', 'joined_at', 'read_at', 'removed_at'];
+
+function moveDatesForward(data) {
+  const today = dateKey(new Date());
+  let lastDay = null;
+  try { lastDay = localStorage.getItem(DATE_KEY); } catch (e) { return; }
+  // Äldre sparad data saknar dagen – räkna fram den från Nattuggla som skapades 60 dagar innan exempeldatan
+  if (!lastDay) {
+    const first = data.users.find(u => u.id === 1);
+    if (first) { const d = new Date(first.created_at); d.setDate(d.getDate() + 60); lastDay = dateKey(d); }
+    else lastDay = today;
+  }
+  const days = Math.round((new Date(today) - new Date(lastDay)) / 86400000);
+  if (days > 0) {
+    const weeks = Math.floor(days / 7) * 7;   // grupper flyttas hela veckor så att träffdagen är samma
+    const shift = (value, n) => { const d = new Date(value); d.setDate(d.getDate() + n); return d.toISOString(); };
+    TABLES.forEach(t => data[t].forEach(row => {
+      const n = t === 'groups' || t === 'group_attendance' ? weeks : days;
+      DATE_FIELDS.forEach(f => { if (row[f]) row[f] = shift(row[f], n); });
+      if (row.meeting_date) row.meeting_date = dateKey(shift(row.meeting_date + 'T12:00:00', n));
+    }));
+    saveDb(data);
+  }
+  try { localStorage.setItem(DATE_KEY, today); } catch (e) { /* ignorera */ }
 }
 
 function saveDb(data) {
