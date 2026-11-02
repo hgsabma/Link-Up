@@ -58,45 +58,40 @@
           <span class="go">Se aktiviteter <span data-icon="arrow"></span></span>
         </a>
       </div>
-    </section>
-
-    <!-- Populära ämnen -->
-    <section class="section" aria-labelledby="topics-title">
-      <div class="section-head">
-        <h2 id="topics-title">Populära ämnen</h2>
-        <a href="amnen.html">Alla ämnen</a>
+      <!-- Populära ämnen -->
+      <div class="row" style="margin-top:1.25rem">
+        <h3 id="topics-title" class="small muted" style="margin:0">Populära ämnen:</h3>
+        <ul class="chips" id="popular-topics" aria-labelledby="topics-title"></ul>
       </div>
-      <ul class="chips" id="popular-topics"></ul>
     </section>
 
-    <!-- Kommande aktiviteter -->
+    <!-- På gång: aktiviteter och veckans lässtund -->
     <section class="section" aria-labelledby="activities-title">
       <div class="section-head">
-        <h2 id="activities-title">Kommande aktiviteter</h2>
+        <h2 id="activities-title">På gång</h2>
         <a href="aktiviteter.html">Alla aktiviteter</a>
       </div>
-      <div class="grid grid-3" id="upcoming"></div>
+      <div class="grid grid-3">
+        <div id="upcoming" style="display:contents"></div>
+        <article class="card activity" id="weekly-reading"></article>
+      </div>
     </section>
 
-    <div class="grid grid-2 section">
-      <!-- Veckans lässtund -->
-      <section class="card" aria-labelledby="reading-title" id="weekly-reading"></section>
-
-      <!-- Hjälprutan -->
-      <section class="card card-soft" aria-labelledby="help-box-title">
-        <h2 id="help-box-title">Behöver du hjälp nu?</h2>
-        <p class="muted">Link Up är inte vård. Om du mår väldigt dåligt finns det alltid någon att ringa.</p>
-        <div id="help-box"></div>
-      </section>
-    </div>
-
-    <!-- Linky -->
-    <section class="section card card-accent ai-banner" aria-labelledby="linky-title">
-      <span data-icon="sparkle"></span>
-      <div>
-        <h2 id="linky-title" class="h3">Vet du inte var du ska börja? Fråga Linky</h2>
-        <p class="muted">Linky är en AI, inte en människa och inte vård. Linky kan tipsa om grupper, aktiviteter och volontärer.</p>
-        <a class="btn btn-secondary" href="linky.html">Prata med Linky</a>
+    <!-- Stöd: Linky och hjälpnummer -->
+    <section class="section" aria-labelledby="support-title">
+      <h2 id="support-title">Stöd</h2>
+      <div class="grid grid-2">
+        <div class="card card-accent stack">
+          <span class="icon-wrap" data-icon="sparkle" style="width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-text)"></span>
+          <h3>Vet du inte var du ska börja?</h3>
+          <p class="muted" style="margin:0">Fråga Linky. Linky är en AI, inte en människa och inte vård, och kan tipsa om grupper, aktiviteter och volontärer.</p>
+          <a class="btn btn-secondary" href="linky.html" style="align-self:flex-start">Prata med Linky</a>
+        </div>
+        <div class="card card-soft">
+          <h3>Behöver du hjälp nu?</h3>
+          <p class="muted">Link Up är inte vård. Om du mår väldigt dåligt finns det alltid någon att ringa.</p>
+          <div id="help-box"></div>
+        </div>
       </div>
     </section>
   </main>

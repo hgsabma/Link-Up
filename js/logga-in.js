@@ -5,7 +5,7 @@ const FAKE_BANKID = [
   { key: 'vanlig', label: 'Vanlig användare', desc: 'Nattuggla, 17 år', bankid_hash: 'bh_7f3a91', birth_date: '2009-03-14' },
   { key: 'ny', label: 'Ny användare', desc: 'Första besöket, 16 år', bankid_hash: 'bh_new_5a21', birth_date: '2010-02-14' },
   { key: 'under15', label: 'Under 15 år', desc: 'Testperson, 13 år', bankid_hash: 'bh_u15_3e08', birth_date: '2013-05-10' },
-  { key: 'moderator', label: 'Moderator', desc: 'Moderator Kim', bankid_hash: 'bh_c2e810', birth_date: '1992-01-11' },
+  { key: 'moderator', label: 'Moderator', desc: 'Moderator Lejonet', bankid_hash: 'bh_c2e810', birth_date: '1992-01-11' },
   { key: 'avstangd', label: 'Avstängd användare', desc: 'Stormen, avstängd av moderator', bankid_hash: 'bh_9d4b77', birth_date: '2009-02-02' }
 ];
 

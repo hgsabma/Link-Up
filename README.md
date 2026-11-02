@@ -38,7 +38,7 @@ På sidan **Logga in** väljer du vem du vill logga in som. Efter "Öppna BankID
 | **Vanlig användare** – Nattuggla, 17 år | Loggas in direkt. Har en liten grupp (Tisdagsgänget), samtal och mående-historik. |
 | **Ny användare** – 16 år | Hamnar på Första besöket: välj alias, minst tre intressen och godkänn reglerna. |
 | **Under 15 år** – 13 år | Nekas med ett vänligt meddelande och tips om Bris på 116 111. |
-| **Moderator** – Moderator Kim | Får tillgång till Moderator-sidan. |
+| **Moderator** – Moderator Lejonet | Får tillgång till Moderator-sidan. |
 | **Avstängd användare** – Stormen | Nekas. Kan inte heller skapa ett nytt konto eftersom inloggningen sker med BankID. |
 
 Vill du börja om? Klicka **Återställ exempeldata** på Min sida.

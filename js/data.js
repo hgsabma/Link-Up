@@ -52,7 +52,7 @@ function seedData() {
       { id: 11, bankid_hash: 'bh_v11j', alias: 'Volontär Jonas', birth_date: '1995-10-03', role: 'volunteer', created_at: relDate(-180) },
       { id: 12, bankid_hash: 'bh_v12a', alias: 'Volontär Amina', birth_date: '2000-02-27', role: 'volunteer', created_at: relDate(-150) },
       { id: 13, bankid_hash: 'bh_k13e', alias: 'Kurator Elin', birth_date: '1985-08-21', role: 'counselor', created_at: relDate(-220) },
-      { id: 14, bankid_hash: 'bh_c2e810', alias: 'Moderator Kim', birth_date: '1992-01-11', role: 'moderator', created_at: relDate(-240) }
+      { id: 14, bankid_hash: 'bh_c2e810', alias: 'Moderator Lejonet', birth_date: '1992-01-11', role: 'moderator', created_at: relDate(-240) }
     ],
 
     interests: [
@@ -250,6 +250,8 @@ function loadDb() {
       const data = JSON.parse(raw);
       TABLES.forEach(t => { if (!Array.isArray(data[t])) data[t] = []; });
       moveDatesForward(data);
+      // Moderatorn heter numera Lejonet (även i data som sparades innan)
+      data.users.forEach(u => { if (u.alias === 'Moderator Kim') u.alias = 'Moderator Lejonet'; });
       return data;
     }
   } catch (e) { /* localStorage kan vara blockerat – då används exempeldatan */ }

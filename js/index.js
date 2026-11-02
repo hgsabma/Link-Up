@@ -46,23 +46,26 @@ function initPage() {
 }
 
 function renderUpcoming() {
-  $('#upcoming').innerHTML = upcomingActivities().slice(0, 3).map(a => activityCardHtml(a, me)).join('');
+  // Två aktiviteter (lässtunden har ett eget kort bredvid)
+  $('#upcoming').innerHTML = upcomingActivities().filter(a => !a.book_id).slice(0, 2).map(a => activityCardHtml(a, me)).join('');
   if (me) bindActivityButtons($('#upcoming'), me, renderUpcoming);
 }
 
+// Veckans lässtund som ett kort i samma rad som aktiviteterna
 function renderReading() {
   const a = nextReading();
   const box = $('#weekly-reading');
-  if (!a) { box.innerHTML = '<h2 id="reading-title">Veckans lässtund</h2><p class="muted">Ingen lässtund planerad just nu.</p>'; return; }
+  if (!a) { box.innerHTML = '<h3>Veckans lässtund</h3><p class="muted">Ingen lässtund planerad just nu.</p>'; return; }
   const book = getBook(a.book_id);
-  box.innerHTML = '<h2 id="reading-title">Veckans lässtund</h2>' +
+  box.innerHTML =
     '<div class="row" style="align-items:flex-start;flex-wrap:nowrap">' +
-      '<div class="book-cover" aria-hidden="true">' + escapeHtml(book.title) + '</div>' +
-      '<div><h3>' + escapeHtml(book.title) + '</h3><p class="muted" style="margin:0">av ' + escapeHtml(book.author) + '</p>' +
-      '<ul class="meta-list" style="margin:1rem 0"><li>' + icon('clock') + formatDate(a.starts_at) + '</li><li>' + icon('pin') + escapeHtml(a.location) + '</li>' +
-      '<li>' + icon('user') + 'Läses av ' + escapeHtml(getAlias(a.created_by)) + '</li></ul>' +
-      '<a class="btn btn-primary" href="lasstund.html">Till lässtunden</a></div>' +
-    '</div>';
+      '<div class="book-cover" style="width:80px;font-size:.75rem" aria-hidden="true">' + escapeHtml(book.title) + '</div>' +
+      '<div><span class="badge badge-accent">Veckans lässtund</span><h3 style="margin:.5rem 0 0">' + escapeHtml(book.title) + '</h3>' +
+      '<p class="muted small" style="margin:0">av ' + escapeHtml(book.author) + '</p></div>' +
+    '</div>' +
+    '<ul class="meta-list"><li>' + icon('clock') + formatDate(a.starts_at) + '</li><li>' + icon('pin') + escapeHtml(a.location) + '</li>' +
+    '<li>' + icon('user') + 'Läses av ' + escapeHtml(getAlias(a.created_by)) + '</li></ul>' +
+    '<a class="btn btn-primary" href="lasstund.html">Till lässtunden</a>';
 }
 
 function chooseMood(value) {
